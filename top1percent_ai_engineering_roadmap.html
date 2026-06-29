@@ -1,0 +1,304 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .roadmap { padding: 1.5rem 0; }
+  .roadmap-header { text-align: center; margin-bottom: 2rem; }
+  .roadmap-header h1 { font-size: 20px; font-weight: 500; color: var(--text-primary); }
+  .roadmap-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .phases { display: flex; flex-direction: column; gap: 6px; }
+  .phase { border-radius: 12px; border: 0.5px solid var(--border); overflow: hidden; cursor: pointer; transition: border-color 0.15s; }
+  .phase:hover { border-color: var(--border-strong); }
+  .phase.open { border-color: var(--border-accent); }
+  .phase-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface-1); user-select: none; }
+  .phase-badge { min-width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; }
+  .phase-meta { flex: 1; }
+  .phase-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .phase-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .phase-duration { font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
+  .phase-chevron { font-size: 14px; color: var(--text-muted); transition: transform 0.2s; }
+  .phase.open .phase-chevron { transform: rotate(180deg); }
+  .phase-body { display: none; padding: 0 16px 14px; background: var(--surface-2); border-top: 0.5px solid var(--border); }
+  .phase.open .phase-body { display: block; }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin-top: 12px; }
+  .skill-card { background: var(--surface-1); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+  .skill-card:hover { border-color: var(--border-strong); background: var(--surface-2); }
+  .skill-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .skill-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; line-height: 1.5; }
+  .skill-tag { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-top: 6px; }
+  .tag-core { background: var(--bg-accent); color: var(--text-accent); }
+  .tag-advanced { background: var(--bg-pro); color: var(--text-pro); }
+  .tag-prod { background: var(--bg-success); color: var(--text-success); }
+  .tag-must { background: var(--bg-danger); color: var(--text-danger); }
+  .phase-insight { font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding: 8px 10px; background: var(--surface-0); border-radius: 6px; border-left: 2px solid var(--border-accent); line-height: 1.6; }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+  .progress-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--text-accent); border-radius: 2px; transition: width 0.3s; }
+  .cta { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .cta-btn { font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 0.5px solid var(--border-strong); background: transparent; color: var(--text-secondary); cursor: pointer; }
+  .cta-btn:hover { background: var(--surface-0); color: var(--text-primary); }
+</style>
+
+<div class="roadmap">
+  <div class="roadmap-header">
+    <h1>Top 1% AI engineering roadmap</h1>
+    <p>13 phases · zero to production-grade · click any phase to expand</p>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--text-accent)"></div>Core</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--text-pro)"></div>Advanced</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--text-success)"></div>Production</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--text-danger)"></div>Must-know</div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+
+  <div class="phases" id="phases"></div>
+</div>
+
+<script>
+const phases = [
+  {
+    n: "01", title: "LLM fundamentals", duration: "3–4 weeks", color: "#185FA5", bg: "#E6F1FB",
+    sub: "How LLMs actually work",
+    skills: [
+      { name: "Transformer architecture", desc: "Attention, self-attention, encoder/decoder", tag: "must" },
+      { name: "Tokenization", desc: "BPE, SentencePiece, token limits", tag: "must" },
+      { name: "Context window", desc: "KV cache, positional encoding", tag: "core" },
+      { name: "Sampling & decoding", desc: "Temperature, top-p, top-k, greedy", tag: "core" },
+      { name: "Embeddings", desc: "Semantic space, cosine similarity, dimensionality", tag: "must" },
+      { name: "Reasoning models", desc: "Chain-of-thought, extended thinking, o1 style", tag: "advanced" },
+      { name: "Model benchmarks", desc: "MMLU, HumanEval, SWE-bench — reading results honestly", tag: "core" },
+    ],
+    insight: "Don't spend months here. Goal: understand how LLMs work, not how to train them. One week of reading + one week of hands-on API calls is enough to move on."
+  },
+  {
+    n: "02", title: "Prompt engineering", duration: "2–3 weeks", color: "#0F6E56", bg: "#E1F5EE",
+    sub: "The craft of model instruction",
+    skills: [
+      { name: "System prompts", desc: "Role definition, persona, behavioral constraints", tag: "must" },
+      { name: "Few-shot prompting", desc: "Demonstration examples, format alignment", tag: "must" },
+      { name: "Chain-of-thought", desc: "Step-by-step reasoning, scratchpad patterns", tag: "core" },
+      { name: "XML / JSON structuring", desc: "Structured output, reliable parsing", tag: "core" },
+      { name: "Prompt caching", desc: "Prefix caching, cost reduction, cache hits", tag: "prod" },
+      { name: "Context compression", desc: "Summarization, truncation, sliding window", tag: "advanced" },
+      { name: "Extended thinking", desc: "Budget tokens, reasoning traces, Opus-class models", tag: "advanced" },
+    ],
+    insight: "This is much more than writing prompts. Prompt engineering is API design for language models — precision, reproducibility, and structured output matter as much as the words."
+  },
+  {
+    n: "03", title: "RAG systems", duration: "3–4 weeks", color: "#993C1D", bg: "#FAECE7",
+    sub: "Retrieval-augmented generation",
+    skills: [
+      { name: "Embeddings pipeline", desc: "Chunking, embedding models, batch processing", tag: "must" },
+      { name: "Vector databases", desc: "pgvector, Pinecone, Qdrant, Weaviate", tag: "must" },
+      { name: "Hybrid search", desc: "Dense + sparse (BM25), reciprocal rank fusion", tag: "core" },
+      { name: "Reranking", desc: "Cross-encoders, Cohere Rerank, two-stage retrieval", tag: "core" },
+      { name: "Chunking strategies", desc: "Semantic, hierarchical, late chunking", tag: "core" },
+      { name: "Graph RAG", desc: "Entity graphs, relationship traversal, Microsoft GraphRAG", tag: "advanced" },
+      { name: "Agentic RAG", desc: "Query routing, iterative retrieval, self-RAG", tag: "advanced" },
+      { name: "HyDE", desc: "Hypothetical document embeddings for better retrieval", tag: "advanced" },
+    ],
+    insight: "RAG is the most useful enterprise AI skill. Every production AI system that touches proprietary data uses some form of retrieval. Master this before moving to agents."
+  },
+  {
+    n: "04", title: "Agentic systems", duration: "4–6 weeks", color: "#533AB7", bg: "#EEEDFE",
+    sub: "Agents, tools, memory, orchestration",
+    skills: [
+      { name: "ReAct pattern", desc: "Reason + Act loop, tool use, observation cycle", tag: "must" },
+      { name: "Tool use / function calling", desc: "Tool schemas, parallel calls, error handling", tag: "must" },
+      { name: "Agent memory", desc: "In-context, episodic, semantic, procedural, prospective", tag: "must" },
+      { name: "Multi-agent systems", desc: "Orchestrator/subagent, fan-out, agent pools", tag: "core" },
+      { name: "Planning", desc: "Task decomposition, hypothesis trees, replanning", tag: "core" },
+      { name: "MCP protocol", desc: "Model Context Protocol, tools/resources/prompts", tag: "must" },
+      { name: "A2A protocol", desc: "Agent-to-agent communication, Google A2A", tag: "advanced" },
+      { name: "LangGraph / CrewAI", desc: "Graph-based orchestration, crew coordination", tag: "core" },
+      { name: "Computer use", desc: "Browser automation, Playwright, UI agents", tag: "advanced" },
+      { name: "Coding agents", desc: "Claude Code, SWE-bench, autonomous code repair", tag: "advanced" },
+    ],
+    insight: "The hottest area right now. Don't just learn one framework — understand the underlying patterns (ReAct, fan-out, orchestration). Frameworks change; patterns don't."
+  },
+  {
+    n: "05", title: "AI gateways & routing", duration: "2 weeks", color: "#3B6D11", bg: "#EAF3DE",
+    sub: "Enterprise model routing layer",
+    skills: [
+      { name: "LiteLLM", desc: "Unified API across 100+ providers", tag: "core" },
+      { name: "OpenRouter / Portkey", desc: "SaaS gateways, provider abstraction", tag: "core" },
+      { name: "Model routing", desc: "Cost-based, latency-based, capability routing", tag: "prod" },
+      { name: "Fallback chains", desc: "Automatic failover on error or timeout", tag: "prod" },
+      { name: "Cost tracking", desc: "Token metering, budget enforcement, alerts", tag: "prod" },
+      { name: "Rate limit management", desc: "Queue, backoff, per-user limits", tag: "prod" },
+      { name: "Semantic caching", desc: "Cache similar queries, vector similarity threshold", tag: "advanced" },
+    ],
+    insight: "Most engineers ignore this. In enterprises it's critical — you need to route intelligently across models by cost, capability, and latency without changing application code."
+  },
+  {
+    n: "06", title: "Guardrails & safety", duration: "2–3 weeks", color: "#A32D2D", bg: "#FCEBEB",
+    sub: "Trust, safety, and compliance layer",
+    skills: [
+      { name: "Input/output validation", desc: "Schema enforcement, type checking, content filters", tag: "must" },
+      { name: "Prompt injection defense", desc: "Indirect injection, delimiter attacks, sandboxing", tag: "must" },
+      { name: "PII detection & redaction", desc: "Named entity recognition, regex patterns, Presidio", tag: "must" },
+      { name: "Jailbreak prevention", desc: "Constitutional AI, refusal classifiers", tag: "core" },
+      { name: "Hallucination detection", desc: "Groundedness scoring, citation verification", tag: "core" },
+      { name: "Guardrails AI / NeMo", desc: "Framework-level guardrails, policy enforcement", tag: "core" },
+      { name: "Data governance", desc: "Data lineage, consent, retention policies", tag: "prod" },
+    ],
+    insight: "Non-negotiable for financial, healthcare, and legal domains. Top 1% engineers design safety in from day one — not as an afterthought after deployment."
+  },
+  {
+    n: "07", title: "Observability & evals", duration: "3–4 weeks", color: "#854F0B", bg: "#FAEEDA",
+    sub: "How you know the system works",
+    skills: [
+      { name: "Tracing", desc: "Span-level traces, tool call attribution, latency breakdown", tag: "must" },
+      { name: "LLM-as-judge", desc: "Model-based grading, rubric design, bias awareness", tag: "must" },
+      { name: "Code-based graders", desc: "Deterministic checks, tool selection accuracy, pass/fail", tag: "must" },
+      { name: "pass@k vs pass^k", desc: "Single-trial vs all-k-must-pass reliability metrics", tag: "advanced" },
+      { name: "Capability evals", desc: "Benchmark suite for stretching agent capability", tag: "core" },
+      { name: "Regression evals", desc: "High-pass-rate suite to catch performance regressions", tag: "prod" },
+      { name: "Drift detection", desc: "Behavioral, token, and output drift over time", tag: "prod" },
+      { name: "LangSmith / Langfuse / Helicone", desc: "Observability platforms, trace storage, dashboards", tag: "core" },
+    ],
+    insight: "One of the highest-paying AI engineering skills. Think of it as Grafana + Splunk for AI. Evaluation is the difference between a demo and a production system."
+  },
+  {
+    n: "08", title: "Production AI engineering", duration: "3–4 weeks", color: "#185FA5", bg: "#E6F1FB",
+    sub: "Making it reliable at scale",
+    skills: [
+      { name: "Streaming responses", desc: "SSE, token streaming, partial renders", tag: "must" },
+      { name: "Async / parallel tool calls", desc: "Concurrent agent execution, fan-out patterns", tag: "must" },
+      { name: "Retry & timeout logic", desc: "Exponential backoff, circuit breakers, bulkheads", tag: "must" },
+      { name: "Latency budgets", desc: "P50/P95/P99 targets, slow path identification", tag: "prod" },
+      { name: "Cost optimization", desc: "Token reduction, model downsizing, caching strategies", tag: "prod" },
+      { name: "Semantic caching", desc: "Similarity-based response reuse, cache invalidation", tag: "advanced" },
+      { name: "WebSockets / SSE", desc: "Real-time agent output, bi-directional channels", tag: "core" },
+    ],
+    insight: "This is where engineers become AI engineers. The AI part is 20% of the work. The other 80% is distributed systems, resilience, and operational discipline."
+  },
+  {
+    n: "09", title: "Software engineering essentials", duration: "Parallel", color: "#0F6E56", bg: "#E1F5EE",
+    sub: "The non-negotiable foundations",
+    skills: [
+      { name: "Python async", desc: "asyncio, FastAPI, concurrent.futures", tag: "must" },
+      { name: "REST API design", desc: "OpenAPI spec, versioning, error contracts", tag: "must" },
+      { name: "PostgreSQL + pgvector", desc: "Relational + vector in one store, hybrid queries", tag: "must" },
+      { name: "Redis", desc: "Caching, session, pub/sub, rate limiting", tag: "core" },
+      { name: "Docker", desc: "Containerization, multi-stage builds, compose", tag: "must" },
+      { name: "Git & CI/CD", desc: "Branching, PR review, automated pipelines", tag: "must" },
+      { name: "Spring AI (Java)", desc: "Enterprise Java AI stack, ChatClient, advisors", tag: "core" },
+      { name: "MCP SDKs", desc: "Server and client implementation, tool registration", tag: "core" },
+    ],
+    insight: "Run this in parallel with everything else. Don't treat it as a separate phase — use Python or Java as your implementation language throughout the entire roadmap."
+  },
+  {
+    n: "10", title: "Inference & deployment", duration: "2–3 weeks", color: "#533AB7", bg: "#EEEDFE",
+    sub: "Running models in production",
+    skills: [
+      { name: "Frontier APIs", desc: "Anthropic, OpenAI, Google — production-grade usage", tag: "must" },
+      { name: "vLLM", desc: "Continuous batching, paged attention, self-hosted inference", tag: "advanced" },
+      { name: "Ollama", desc: "Local model serving, GGUF quantization", tag: "core" },
+      { name: "AWS Bedrock", desc: "Managed model serving, knowledge bases, agents", tag: "prod" },
+      { name: "Google Vertex AI", desc: "Gemini + Claude on GCP, grounding, search", tag: "prod" },
+      { name: "Azure AI Foundry", desc: "Azure OpenAI, content safety, managed endpoints", tag: "prod" },
+      { name: "Kubernetes", desc: "Pod scaling, GPU node pools, Helm charts for AI workloads", tag: "advanced" },
+      { name: "GPU inference basics", desc: "CUDA, quantization, tensor parallelism concepts", tag: "advanced" },
+    ],
+    insight: "Most enterprise engineers only need frontier APIs + one cloud platform. Go deep on vLLM/Kubernetes only if you're building self-hosted inference — don't let it become a distraction."
+  },
+  {
+    n: "11", title: "Multimodal integration", duration: "2 weeks", color: "#993C1D", bg: "#FAECE7",
+    sub: "Beyond text",
+    skills: [
+      { name: "Vision APIs", desc: "Image understanding, document parsing, chart reading", tag: "core" },
+      { name: "Image generation", desc: "DALL-E, Flux, Stable Diffusion, prompt-to-image", tag: "core" },
+      { name: "OCR & document AI", desc: "PDF extraction, form parsing, table recognition", tag: "prod" },
+      { name: "Audio & speech-to-text", desc: "Whisper, real-time transcription, diarization", tag: "core" },
+      { name: "Voice agents", desc: "TTS + STT + LLM loop, ElevenLabs, Cartesia", tag: "advanced" },
+      { name: "Video generation", desc: "Sora, Veo, Runway — emerging capability", tag: "advanced" },
+    ],
+    insight: "Becoming essential in 2026. Start with vision + document AI (highest enterprise demand), then build toward voice agents as a differentiated skill."
+  },
+  {
+    n: "12", title: "Ecosystem fluency", duration: "Ongoing", color: "#3B6D11", bg: "#EAF3DE",
+    sub: "Knowing the landscape",
+    skills: [
+      { name: "Frontier models", desc: "Claude, GPT-4o, Gemini, Grok — strengths per task", tag: "must" },
+      { name: "Open-weight models", desc: "Llama, Qwen, Mistral, DeepSeek — when to self-host", tag: "core" },
+      { name: "Hugging Face ecosystem", desc: "Model hub, transformers library, datasets", tag: "core" },
+      { name: "arXiv reading habit", desc: "Scan papers weekly — 2-3 abstracts, 1 deep read", tag: "advanced" },
+      { name: "Benchmark literacy", desc: "SWE-bench, MMLU, HELM — reading results critically", tag: "core" },
+      { name: "Framework trends", desc: "LangGraph, DSPy, smolagents — what's gaining traction", tag: "core" },
+    ],
+    insight: "Read benchmark reports occasionally, but spend most of your time building. Ecosystem awareness is about knowing what exists — not mastering every tool before using it."
+  },
+  {
+    n: "13", title: "Build publicly", duration: "Ongoing", color: "#854F0B", bg: "#FAEEDA",
+    sub: "The compounding advantage",
+    skills: [
+      { name: "GitHub portfolio", desc: "Production-quality repos, good READMEs, real problems", tag: "must" },
+      { name: "Technical writing", desc: "Blog, Substack — explain what you built and why", tag: "must" },
+      { name: "LinkedIn presence", desc: "Architecture decisions, lessons learned, honest takes", tag: "core" },
+      { name: "YouTube / video", desc: "Live coding, architecture walkthroughs, deep dives", tag: "advanced" },
+      { name: "Open source contribution", desc: "PRs to Spring AI, LangChain4j, LiteLLM", tag: "advanced" },
+      { name: "Community building", desc: "Discord, newsletters, conference talks", tag: "advanced" },
+    ],
+    insight: "Underrated. The engineers who build in public compound their reputation faster than anyone. Sanitized versions of real production problems beat tutorial projects every time."
+  }
+];
+
+const tagLabel = { must: "must-know", core: "core", advanced: "advanced", prod: "production" };
+const tagClass = { must: "tag-must", core: "tag-core", advanced: "tag-advanced", prod: "tag-prod" };
+
+let openPhases = new Set();
+
+function render() {
+  const container = document.getElementById('phases');
+  container.innerHTML = '';
+  phases.forEach((p, i) => {
+    const isOpen = openPhases.has(i);
+    const div = document.createElement('div');
+    div.className = 'phase' + (isOpen ? ' open' : '');
+    div.innerHTML = `
+      <div class="phase-header" onclick="toggle(${i})">
+        <div class="phase-badge" style="background:${p.bg};color:${p.color}">${p.n}</div>
+        <div class="phase-meta">
+          <div class="phase-title">${p.title}</div>
+          <div class="phase-sub">${p.sub}</div>
+        </div>
+        <div class="phase-duration">${p.duration}</div>
+        <i class="ti ti-chevron-down phase-chevron" aria-hidden="true"></i>
+      </div>
+      <div class="phase-body">
+        <div class="skills-grid">
+          ${p.skills.map(s => `
+            <div class="skill-card" onclick="sendPrompt('Tell me more about ${s.name} in AI engineering — what to learn, resources, and how it connects to production systems')">
+              <div class="skill-name">${s.name}</div>
+              <div class="skill-desc">${s.desc}</div>
+              <span class="skill-tag ${tagClass[s.tag]}">${tagLabel[s.tag]}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="cta">
+          <button class="cta-btn" onclick="sendPrompt('Give me a 2-week study plan for Phase ${p.n}: ${p.title}')">Study plan for this phase ↗</button>
+          <button class="cta-btn" onclick="sendPrompt('What are the best resources and projects to master ${p.title} in AI engineering?')">Resources & projects ↗</button>
+        </div>
+        <div class="phase-insight">${p.insight}</div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+  const pct = Math.round((openPhases.size / phases.length) * 100);
+  document.getElementById('pbar').style.width = pct + '%';
+}
+
+function toggle(i) {
+  if (openPhases.has(i)) openPhases.delete(i);
+  else openPhases.add(i);
+  render();
+}
+
+render();
+</script>
