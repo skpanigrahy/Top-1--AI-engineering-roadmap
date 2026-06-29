@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Top 1% AI Engineering Roadmap 2026</title>
+<meta name="description" content="A complete, phase-by-phase roadmap to reach the top 1% in AI engineering — from zero to production-grade systems." />
+<meta property="og:title" content="Top 1% AI Engineering Roadmap 2026" />
+<meta property="og:description" content="13 phases. Zero to production-grade AI systems." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0f;
+    --bg1: #131316;
+    --bg2: #1a1a1e;
+    --bg3: #222228;
+    --border: rgba(255,255,255,0.07);
+    --border-strong: rgba(255,255,255,0.13);
+    --text-primary: #f0f0f2;
+    --text-secondary: #a0a0aa;
+    --text-muted: #5a5a66;
+    --accent: #6c63ff;
+    --accent-bg: rgba(108,99,255,0.1);
+    --accent-border: rgba(108,99,255,0.3);
+    --font: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    padding: 3rem 1.5rem 2rem;
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .site-header h1 {
+    font-size: clamp(26px, 5vw, 42px);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .site-header h1 span {
+    background: linear-gradient(135deg, #6c63ff 0%, #a78bfa 50%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .site-header p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto 2rem;
+  }
+
+  /* ── STATS ROW ── */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 600; color: var(--text-primary); font-family: var(--mono); }
+  .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 2px;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    max-width: 860px;
+    margin: 0 auto 1.5rem;
+    padding: 0 1.5rem;
+  }
+  .progress-track {
+    height: 2px;
+    background: var(--border-strong);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6c63ff, #a78bfa);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+
+  /* ── PHASE CARD ── */
+  .phase {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .phase:hover { border-color: var(--border-strong); }
+  .phase.open { border-color: var(--accent-border); }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--bg1);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s;
+  }
+  .phase-header:hover { background: var(--bg2); }
+
+  .phase-badge {
+    min-width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .phase-meta { flex: 1; min-width: 0; }
+  .phase-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .phase-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .phase-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .phase-duration {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .chevron {
+    width: 16px; height: 16px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .phase.open .chevron { transform: rotate(180deg); }
+
+  /* ── PHASE BODY ── */
+  .phase-body {
+    display: none;
+    padding: 16px 18px 18px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+  }
+  .phase.open .phase-body { display: block; }
+
+  /* ── SKILLS GRID ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .skill-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 13px;
+    cursor: default;
+    transition: border-color 0.12s, background 0.12s;
+  }
+  .skill-card:hover {
+    border-color: var(--border-strong);
+    background: #27272e;
+  }
+
+  .skill-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+  .skill-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 7px;
+  }
+  .skill-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+  }
+  .tag-must    { background: rgba(239,68,68,0.12);  color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+  .tag-core    { background: rgba(108,99,255,0.12); color: #a78bfa; border: 1px solid rgba(108,99,255,0.2); }
+  .tag-advanced{ background: rgba(139,92,246,0.12); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.2); }
+  .tag-prod    { background: rgba(34,197,94,0.1);   color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+
+  /* ── INSIGHT ── */
+  .phase-insight {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    padding: 10px 13px;
+    background: var(--bg1);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--accent);
+    margin-top: 4px;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .ctrl-btn {
+    font-size: 12px;
+    font-family: var(--font);
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+  .ctrl-btn:hover { background: var(--bg3); color: var(--text-primary); }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .site-footer a { color: var(--accent); text-decoration: none; }
+  .site-footer a:hover { text-decoration: underline; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .phase-duration { display: none; }
+    .stats { gap: 1.25rem; }
+  }
+  @media (max-width: 400px) {
+    .skills-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── REDUCED MOTION ── */
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="eyebrow">2026 edition</div>
+  <h1>Top <span>1%</span> AI Engineering<br>Roadmap</h1>
+  <p>A complete, phase-by-phase path from zero to production-grade AI systems. Built for engineers who want depth, not just demos.</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">13</div><div class="stat-label">Phases</div></div>
+    <div class="stat"><div class="stat-num">89</div><div class="stat-label">Skills</div></div>
+    <div class="stat"><div class="stat-num">8mo</div><div class="stat-label">Realistic timeline</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Ongoing phases</div></div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div>Must-know</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Core</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c4b5fd"></div>Advanced</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div>Production</div>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="pbar"></div></div>
+  <div class="progress-label" id="plabel">0 / 13 phases explored</div>
+</div>
+
+<main class="main">
+  <div class="controls">
+    <button class="ctrl-btn" onclick="expandAll()">Expand all</button>
+    <button class="ctrl-btn" onclick="collapseAll()">Collapse all</button>
+  </div>
+  <div id="phases"></div>
+</main>
+
+<footer class="site-footer">
+  Built for engineers who want to reach the top 1% in AI engineering &mdash;
+  <a href="https://www.linkedin.com/in/santoshguntuku" target="_blank" rel="noopener">by Santosh</a>
+  &middot; <a href="https://thetechcanvas.substack.com" target="_blank" rel="noopener">The Tech Canvas</a>
+</footer>
+
+<script>
+const phases = [
+  {
+    n:"01", title:"LLM fundamentals", duration:"3–4 weeks",
+    sub:"How LLMs actually work",
+    color:"#818cf8", bg:"rgba(129,140,248,0.12)",
+    skills:[
+      {name:"Transformer architecture",desc:"Attention, self-attention, encoder/decoder",tag:"must"},
+      {name:"Tokenization",desc:"BPE, SentencePiece, token limits",tag:"must"},
+      {name:"Context window",desc:"KV cache, positional encoding",tag:"core"},
+      {name:"Sampling & decoding",desc:"Temperature, top-p, top-k, greedy",tag:"core"},
+      {name:"Embeddings",desc:"Semantic space, cosine similarity, dimensionality",tag:"must"},
+      {name:"Reasoning models",desc:"Chain-of-thought, extended thinking, o1 style",tag:"advanced"},
+      {name:"Model benchmarks",desc:"MMLU, HumanEval, SWE-bench — reading results honestly",tag:"core"},
+    ],
+    insight:"Don't spend months here. Goal: understand how LLMs work, not how to train them. One week of reading + one week of hands-on API calls is enough to move on."
+  },
+  {
+    n:"02", title:"Prompt engineering", duration:"2–3 weeks",
+    sub:"The craft of model instruction",
+    color:"#34d399", bg:"rgba(52,211,153,0.10)",
+    skills:[
+      {name:"System prompts",desc:"Role definition, persona, behavioral constraints",tag:"must"},
+      {name:"Few-shot prompting",desc:"Demonstration examples, format alignment",tag:"must"},
+      {name:"Chain-of-thought",desc:"Step-by-step reasoning, scratchpad patterns",tag:"core"},
+      {name:"XML / JSON structuring",desc:"Structured output, reliable parsing",tag:"core"},
+      {name:"Prompt caching",desc:"Prefix caching, cost reduction, cache hits",tag:"prod"},
+      {name:"Context compression",desc:"Summarization, truncation, sliding window",tag:"advanced"},
+      {name:"Extended thinking",desc:"Budget tokens, reasoning traces, Opus-class models",tag:"advanced"},
+    ],
+    insight:"This is much more than writing prompts. Prompt engineering is API design for language models — precision, reproducibility, and structured output matter as much as the words."
+  },
+  {
+    n:"03", title:"RAG systems", duration:"3–4 weeks",
+    sub:"Retrieval-augmented generation",
+    color:"#fb923c", bg:"rgba(251,146,60,0.10)",
+    skills:[
+      {name:"Embeddings pipeline",desc:"Chunking, embedding models, batch processing",tag:"must"},
+      {name:"Vector databases",desc:"pgvector, Pinecone, Qdrant, Weaviate",tag:"must"},
+      {name:"Hybrid search",desc:"Dense + sparse (BM25), reciprocal rank fusion",tag:"core"},
+      {name:"Reranking",desc:"Cross-encoders, Cohere Rerank, two-stage retrieval",tag:"core"},
+      {name:"Chunking strategies",desc:"Semantic, hierarchical, late chunking",tag:"core"},
+      {name:"Graph RAG",desc:"Entity graphs, relationship traversal, Microsoft GraphRAG",tag:"advanced"},
+      {name:"Agentic RAG",desc:"Query routing, iterative retrieval, self-RAG",tag:"advanced"},
+      {name:"HyDE",desc:"Hypothetical document embeddings for better retrieval",tag:"advanced"},
+    ],
+    insight:"RAG is the most useful enterprise AI skill. Every production AI system that touches proprietary data uses some form of retrieval. Master this before moving to agents."
+  },
+  {
+    n:"04", title:"Agentic systems", duration:"4–6 weeks",
+    sub:"Agents, tools, memory, orchestration",
+    color:"#a78bfa", bg:"rgba(167,139,250,0.10)",
+    skills:[
+      {name:"ReAct pattern",desc:"Reason + Act loop, tool use, observation cycle",tag:"must"},
+      {name:"Tool use / function calling",desc:"Tool schemas, parallel calls, error handling",tag:"must"},
+      {name:"Agent memory",desc:"In-context, episodic, semantic, procedural, prospective",tag:"must"},
+      {name:"Multi-agent systems",desc:"Orchestrator/subagent, fan-out, agent pools",tag:"core"},
+      {name:"Planning",desc:"Task decomposition, hypothesis trees, replanning",tag:"core"},
+      {name:"MCP protocol",desc:"Model Context Protocol, tools/resources/prompts",tag:"must"},
+      {name:"A2A protocol",desc:"Agent-to-agent communication, Google A2A",tag:"advanced"},
+      {name:"LangGraph / CrewAI",desc:"Graph-based orchestration, crew coordination",tag:"core"},
+      {name:"Computer use",desc:"Browser automation, Playwright, UI agents",tag:"advanced"},
+      {name:"Coding agents",desc:"Claude Code, SWE-bench, autonomous code repair",tag:"advanced"},
+    ],
+    insight:"The hottest area right now. Don't just learn one framework — understand the underlying patterns (ReAct, fan-out, orchestration). Frameworks change; patterns don't."
+  },
+  {
+    n:"05", title:"AI gateways & routing", duration:"2 weeks",
+    sub:"Enterprise model routing layer",
+    color:"#4ade80", bg:"rgba(74,222,128,0.10)",
+    skills:[
+      {name:"LiteLLM",desc:"Unified API across 100+ providers",tag:"core"},
+      {name:"OpenRouter / Portkey",desc:"SaaS gateways, provider abstraction",tag:"core"},
+      {name:"Model routing",desc:"Cost-based, latency-based, capability routing",tag:"prod"},
+      {name:"Fallback chains",desc:"Automatic failover on error or timeout",tag:"prod"},
+      {name:"Cost tracking",desc:"Token metering, budget enforcement, alerts",tag:"prod"},
+      {name:"Rate limit management",desc:"Queue, backoff, per-user limits",tag:"prod"},
+      {name:"Semantic caching",desc:"Cache similar queries, vector similarity threshold",tag:"advanced"},
+    ],
+    insight:"Most engineers ignore this. In enterprises it's critical — you need to route intelligently across models by cost, capability, and latency without changing application code."
+  },
+  {
+    n:"06", title:"Guardrails & safety", duration:"2–3 weeks",
+    sub:"Trust, safety, and compliance layer",
+    color:"#f87171", bg:"rgba(248,113,113,0.10)",
+    skills:[
+      {name:"Input/output validation",desc:"Schema enforcement, type checking, content filters",tag:"must"},
+      {name:"Prompt injection defense",desc:"Indirect injection, delimiter attacks, sandboxing",tag:"must"},
+      {name:"PII detection & redaction",desc:"Named entity recognition, regex patterns, Presidio",tag:"must"},
+      {name:"Jailbreak prevention",desc:"Constitutional AI, refusal classifiers",tag:"core"},
+      {name:"Hallucination detection",desc:"Groundedness scoring, citation verification",tag:"core"},
+      {name:"Guardrails AI / NeMo",desc:"Framework-level guardrails, policy enforcement",tag:"core"},
+      {name:"Data governance",desc:"Data lineage, consent, retention policies",tag:"prod"},
+    ],
+    insight:"Non-negotiable for financial, healthcare, and legal domains. Top 1% engineers design safety in from day one — not as an afterthought after deployment."
+  },
+  {
+    n:"07", title:"Observability & evals", duration:"3–4 weeks",
+    sub:"How you know the system works",
+    color:"#fbbf24", bg:"rgba(251,191,36,0.10)",
+    skills:[
+      {name:"Tracing",desc:"Span-level traces, tool call attribution, latency breakdown",tag:"must"},
+      {name:"LLM-as-judge",desc:"Model-based grading, rubric design, bias awareness",tag:"must"},
+      {name:"Code-based graders",desc:"Deterministic checks, tool selection accuracy, pass/fail",tag:"must"},
+      {name:"pass@k vs pass^k",desc:"Single-trial vs all-k-must-pass reliability metrics",tag:"advanced"},
+      {name:"Capability evals",desc:"Benchmark suite for stretching agent capability",tag:"core"},
+      {name:"Regression evals",desc:"High-pass-rate suite to catch performance regressions",tag:"prod"},
+      {name:"Drift detection",desc:"Behavioral, token, and output drift over time",tag:"prod"},
+      {name:"LangSmith / Langfuse / Helicone",desc:"Observability platforms, trace storage, dashboards",tag:"core"},
+    ],
+    insight:"One of the highest-paying AI engineering skills. Think of it as Grafana + Splunk for AI. Evaluation is the difference between a demo and a production system."
+  },
+  {
+    n:"08", title:"Production AI engineering", duration:"3–4 weeks",
+    sub:"Making it reliable at scale",
+    color:"#60a5fa", bg:"rgba(96,165,250,0.10)",
+    skills:[
+      {name:"Streaming responses",desc:"SSE, token streaming, partial renders",tag:"must"},
+      {name:"Async / parallel tool calls",desc:"Concurrent agent execution, fan-out patterns",tag:"must"},
+      {name:"Retry & timeout logic",desc:"Exponential backoff, circuit breakers, bulkheads",tag:"must"},
+      {name:"Latency budgets",desc:"P50/P95/P99 targets, slow path identification",tag:"prod"},
+      {name:"Cost optimization",desc:"Token reduction, model downsizing, caching strategies",tag:"prod"},
+      {name:"Semantic caching",desc:"Similarity-based response reuse, cache invalidation",tag:"advanced"},
+      {name:"WebSockets / SSE",desc:"Real-time agent output, bi-directional channels",tag:"core"},
+    ],
+    insight:"This is where engineers become AI engineers. The AI part is 20% of the work. The other 80% is distributed systems, resilience, and operational discipline."
+  },
+  {
+    n:"09", title:"Software engineering essentials", duration:"Parallel",
+    sub:"The non-negotiable foundations",
+    color:"#34d399", bg:"rgba(52,211,153,0.10)",
+    skills:[
+      {name:"Python async",desc:"asyncio, FastAPI, concurrent.futures",tag:"must"},
+      {name:"REST API design",desc:"OpenAPI spec, versioning, error contracts",tag:"must"},
+      {name:"PostgreSQL + pgvector",desc:"Relational + vector in one store, hybrid queries",tag:"must"},
+      {name:"Redis",desc:"Caching, session, pub/sub, rate limiting",tag:"core"},
+      {name:"Docker",desc:"Containerization, multi-stage builds, compose",tag:"must"},
+      {name:"Git & CI/CD",desc:"Branching, PR review, automated pipelines",tag:"must"},
+      {name:"Spring AI (Java)",desc:"Enterprise Java AI stack, ChatClient, advisors",tag:"core"},
+      {name:"MCP SDKs",desc:"Server and client implementation, tool registration",tag:"core"},
+    ],
+    insight:"Run this in parallel with everything else. Don't treat it as a separate phase — use Python or Java as your implementation language throughout the entire roadmap."
+  },
+  {
+    n:"10", title:"Inference & deployment", duration:"2–3 weeks",
+    sub:"Running models in production",
+    color:"#a78bfa", bg:"rgba(167,139,250,0.10)",
+    skills:[
+      {name:"Frontier APIs",desc:"Anthropic, OpenAI, Google — production-grade usage",tag:"must"},
+      {name:"vLLM",desc:"Continuous batching, paged attention, self-hosted inference",tag:"advanced"},
+      {name:"Ollama",desc:"Local model serving, GGUF quantization",tag:"core"},
+      {name:"AWS Bedrock",desc:"Managed model serving, knowledge bases, agents",tag:"prod"},
+      {name:"Google Vertex AI",desc:"Gemini + Claude on GCP, grounding, search",tag:"prod"},
+      {name:"Azure AI Foundry",desc:"Azure OpenAI, content safety, managed endpoints",tag:"prod"},
+      {name:"Kubernetes",desc:"Pod scaling, GPU node pools, Helm charts for AI workloads",tag:"advanced"},
+      {name:"GPU inference basics",desc:"CUDA, quantization, tensor parallelism concepts",tag:"advanced"},
+    ],
+    insight:"Most enterprise engineers only need frontier APIs + one cloud platform. Go deep on vLLM/Kubernetes only if you're building self-hosted inference — don't let it become a distraction."
+  },
+  {
+    n:"11", title:"Multimodal integration", duration:"2 weeks",
+    sub:"Beyond text",
+    color:"#fb923c", bg:"rgba(251,146,60,0.10)",
+    skills:[
+      {name:"Vision APIs",desc:"Image understanding, document parsing, chart reading",tag:"core"},
+      {name:"Image generation",desc:"DALL-E, Flux, Stable Diffusion, prompt-to-image",tag:"core"},
+      {name:"OCR & document AI",desc:"PDF extraction, form parsing, table recognition",tag:"prod"},
+      {name:"Audio & speech-to-text",desc:"Whisper, real-time transcription, diarization",tag:"core"},
+      {name:"Voice agents",desc:"TTS + STT + LLM loop, ElevenLabs, Cartesia",tag:"advanced"},
+      {name:"Video generation",desc:"Sora, Veo, Runway — emerging capability",tag:"advanced"},
+    ],
+    insight:"Becoming essential in 2026. Start with vision + document AI (highest enterprise demand), then build toward voice agents as a differentiated skill."
+  },
+  {
+    n:"12", title:"Ecosystem fluency", duration:"Ongoing",
+    sub:"Knowing the landscape",
+    color:"#4ade80", bg:"rgba(74,222,128,0.10)",
+    skills:[
+      {name:"Frontier models",desc:"Claude, GPT-4o, Gemini, Grok — strengths per task",tag:"must"},
+      {name:"Open-weight models",desc:"Llama, Qwen, Mistral, DeepSeek — when to self-host",tag:"core"},
+      {name:"Hugging Face ecosystem",desc:"Model hub, transformers library, datasets",tag:"core"},
+      {name:"arXiv reading habit",desc:"Scan papers weekly — 2–3 abstracts, 1 deep read",tag:"advanced"},
+      {name:"Benchmark literacy",desc:"SWE-bench, MMLU, HELM — reading results critically",tag:"core"},
+      {name:"Framework trends",desc:"LangGraph, DSPy, smolagents — what's gaining traction",tag:"core"},
+    ],
+    insight:"Read benchmark reports occasionally, but spend most of your time building. Ecosystem awareness is about knowing what exists — not mastering every tool before using it."
+  },
+  {
+    n:"13", title:"Build publicly", duration:"Ongoing",
+    sub:"The compounding advantage",
+    color:"#fbbf24", bg:"rgba(251,191,36,0.10)",
+    skills:[
+      {name:"GitHub portfolio",desc:"Production-quality repos, good READMEs, real problems",tag:"must"},
+      {name:"Technical writing",desc:"Blog, Substack — explain what you built and why",tag:"must"},
+      {name:"LinkedIn presence",desc:"Architecture decisions, lessons learned, honest takes",tag:"core"},
+      {name:"YouTube / video",desc:"Live coding, architecture walkthroughs, deep dives",tag:"advanced"},
+      {name:"Open source contribution",desc:"PRs to Spring AI, LangChain4j, LiteLLM",tag:"advanced"},
+      {name:"Community building",desc:"Discord, newsletters, conference talks",tag:"advanced"},
+    ],
+    insight:"Underrated. Engineers who build in public compound their reputation faster than anyone else. Sanitized versions of real production problems beat tutorial projects every time."
+  }
+];
+
+const tagLabel = { must:"must-know", core:"core", advanced:"advanced", prod:"production" };
+const tagClass = { must:"tag-must", core:"tag-core", advanced:"tag-advanced", prod:"tag-prod" };
+
+let openSet = new Set();
+
+function updateProgress() {
+  const pct = Math.round((openSet.size / phases.length) * 100);
+  document.getElementById('pbar').style.width = pct + '%';
+  document.getElementById('plabel').textContent = `${openSet.size} / ${phases.length} phases explored`;
+}
+
+function renderPhases() {
+  const container = document.getElementById('phases');
+  container.innerHTML = '';
+  phases.forEach((p, i) => {
+    const isOpen = openSet.has(i);
+    const div = document.createElement('div');
+    div.className = 'phase' + (isOpen ? ' open' : '');
+    div.setAttribute('data-index', i);
+    div.innerHTML = `
+      <div class="phase-header" onclick="toggle(${i})" role="button" aria-expanded="${isOpen}" tabindex="0">
+        <div class="phase-badge" style="background:${p.bg};color:${p.color}">${p.n}</div>
+        <div class="phase-meta">
+          <div class="phase-title">${p.title}</div>
+          <div class="phase-sub">${p.sub}</div>
+        </div>
+        <div class="phase-right">
+          <span class="phase-duration">${p.duration}</span>
+          <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 6 8 10 12 6"/></svg>
+        </div>
+      </div>
+      <div class="phase-body" ${isOpen ? '' : 'hidden'}>
+        <div class="skills-grid">
+          ${p.skills.map(s => `
+            <div class="skill-card">
+              <div class="skill-name">${s.name}</div>
+              <div class="skill-desc">${s.desc}</div>
+              <span class="skill-tag ${tagClass[s.tag]}">${tagLabel[s.tag]}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="phase-insight">${p.insight}</div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+  updateProgress();
+}
+
+function toggle(i) {
+  if (openSet.has(i)) {
+    openSet.delete(i);
+  } else {
+    openSet.add(i);
+  }
+  const phase = document.querySelector(`.phase[data-index="${i}"]`);
+  const body = phase.querySelector('.phase-body');
+  const header = phase.querySelector('.phase-header');
+  const isOpen = openSet.has(i);
+  phase.classList.toggle('open', isOpen);
+  header.setAttribute('aria-expanded', isOpen);
+  if (isOpen) body.removeAttribute('hidden');
+  else body.setAttribute('hidden', '');
+  updateProgress();
+}
+
+function expandAll() {
+  phases.forEach((_, i) => openSet.add(i));
+  renderPhases();
+}
+
+function collapseAll() {
+  openSet.clear();
+  renderPhases();
+}
+
+// keyboard support
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.classList.contains('phase-header')) {
+    const i = parseInt(e.target.closest('.phase').dataset.index);
+    toggle(i);
+  }
+});
+
+renderPhases();
+</script>
+</body>
+</html>
