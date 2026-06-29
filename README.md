@@ -6,7 +6,7 @@ A fully self-contained, interactive HTML roadmap for engineers who want to reach
 
 ## 🚀 Live Demo
 
-👉 **[View the roadmap](https://YOUR_USERNAME.github.io/YOUR_REPO_NAME/)**
+👉 **[View the roadmap](https://skpanigrahy.github.io/Top-1--AI-engineering-roadmap/)**
 
 ## 📁 What's in this repo
 
@@ -24,7 +24,7 @@ No build step. No npm. No frameworks. Open `index.html` in any browser.
 3. Under **Source**, select `Deploy from a branch`
 4. Set branch to `main`, folder to `/ (root)`
 5. Click **Save**
-6. Your page will be live at `https://YOUR_USERNAME.github.io/YOUR_REPO_NAME/` within ~60 seconds
+6. Your page will be live at `https://skpanigrahy.github.io/Top-1--AI-engineering-roadmap/` within ~60 seconds
 
 ## 💻 Running locally
 
@@ -63,4 +63,4 @@ python3 -m http.server 8080
 
 ---
 
-Built by [Santosh](https://www.linkedin.com/in/santoshguntuku) · [The Tech Canvas](https://thetechcanvas.substack.com)
+Built by [Santosh](https://www.linkedin.com/in/santosh-kumar-panigrahy-32810712/) · [The Tech Canvas](https://thetechcanvas.substack.com)
