@@ -239,12 +239,153 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     padding: 11px 13px;
-    cursor: default;
+    cursor: pointer;
     transition: border-color 0.12s, background 0.12s;
   }
   .skill-card:hover {
-    border-color: var(--border-strong);
+    border-color: var(--accent-border);
     background: #27272e;
+  }
+  .skill-card.active {
+    border-color: var(--accent);
+    background: #27272e;
+  }
+  .skill-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .skill-expand-icon {
+    width: 13px; height: 13px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: transform 0.15s;
+  }
+  .skill-card.active .skill-expand-icon { transform: rotate(45deg); color: var(--accent); }
+
+  /* ── SKILL DETAIL PANEL (full width, opens below the grid) ── */
+  .skill-detail {
+    display: none;
+    grid-column: 1 / -1;
+    background: var(--bg1);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius-sm);
+    padding: 18px 20px;
+    margin-top: 4px;
+    animation: detailIn 0.18s ease;
+  }
+  @keyframes detailIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .skill-detail.open { display: block; }
+  .skill-detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .skill-detail-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .skill-detail-close {
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 13px;
+    line-height: 1;
+  }
+  .skill-detail-close:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+
+  .skill-section { margin-bottom: 14px; }
+  .skill-section:last-child { margin-bottom: 0; }
+  .skill-section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .skill-section-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .skill-learn-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .skill-learn-list li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    padding-left: 16px;
+    position: relative;
+  }
+  .skill-learn-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 12px;
+  }
+  .skill-warn-box {
+    font-size: 12px;
+    color: #fca5a5;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.18);
+    border-radius: 6px;
+    padding: 9px 12px;
+    line-height: 1.6;
+  }
+  .skill-resources {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .skill-resource-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-primary);
+    text-decoration: none;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 11px;
+    transition: border-color 0.12s, background 0.12s;
+  }
+  .skill-resource-link:hover {
+    border-color: var(--accent-border);
+    background: #27272e;
+  }
+  .skill-resource-link svg {
+    width: 13px; height: 13px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .skill-resource-arrow {
+    margin-left: auto;
+    color: var(--text-muted);
+    font-size: 12px;
   }
 
   .skill-name {
@@ -373,6 +514,1369 @@
 </footer>
 
 <script>
+const SKILLS_DATA = {
+  "Transformer architecture": {
+    what: "The engine inside every LLM. Transformers broke the sequential processing constraint of RNNs by processing all tokens in parallel using self-attention — letting every token attend to every other token simultaneously.",
+    learn: [
+      "Self-attention: Q/K/V vectors, score computation, softmax weighting",
+      "Multi-head attention: parallel attention heads, each learning different relationships",
+      "Transformer block: attention → residual → layer norm → FFN → residual → layer norm",
+      "Positional encoding: sinusoidal (original) vs RoPE (modern, used in Llama/Claude)",
+      "Decoder-only architecture: causal/masked attention — what all major LLMs use"
+    ],
+    production: "KV cache is the most critical production concept — stores Keys/Values for past tokens to avoid recomputation. Context window size directly determines KV cache memory pressure. Attention is O(n²) in sequence length — this is why chunking strategy in RAG matters.",
+    avoid: "Don't implement backpropagation through attention or distributed training — that's ML research, not AI engineering.",
+    resource: { label: "The Illustrated Transformer — Jay Alammar", url: "https://jalammar.github.io/illustrated-transformer/" },
+    resource2: { label: "Let's build GPT — Karpathy (YouTube)", url: "https://www.youtube.com/watch?v=kCc8FmEb1nY" }
+  },
+  "Tokenization": {
+    what: "LLMs don't see words — they see tokens. Tokenization splits text into subword units using algorithms like BPE (Byte Pair Encoding) or SentencePiece. The tokenizer is trained on a corpus and is fixed at inference time.",
+    learn: [
+      "BPE algorithm: merge most frequent character pairs iteratively",
+      "SentencePiece: language-agnostic, treats whitespace as a character",
+      "Token limits: every model has a max context in tokens, not words",
+      "Tiktoken (OpenAI) vs Hugging Face tokenizers — how to count tokens programmatically",
+      "Special tokens: <|endoftext|>, <|im_start|>, system/user/assistant roles"
+    ],
+    production: "Pricing and context limits are token-based. Non-English text uses 2-4x more tokens per word. Code with unusual indentation tokenizes inefficiently. Always count tokens before sending to avoid truncation surprises. Build a token counter into your API wrapper.",
+    avoid: "Don't assume word count ≈ token count. '2024-01-15' can be 5-8 tokens. Test your actual inputs.",
+    resource: { label: "Tiktokenizer — visualize tokenization live", url: "https://tiktokenizer.vercel.app/" },
+    resource2: { label: "Hugging Face Tokenizers docs", url: "https://huggingface.co/docs/tokenizers/index" }
+  },
+  "Context window": {
+    what: "The maximum number of tokens a model can process in one call — input + output combined. Modern LLMs range from 8K (GPT-3.5) to 1M tokens (Claude, Gemini). KV cache stores attention states for all tokens in context.",
+    learn: [
+      "KV cache: Keys + Values stored per token per layer — memory grows linearly with context",
+      "Positional encoding limits: why models degrade beyond trained context length",
+      "Lost-in-the-middle problem: models attend poorly to tokens in the middle of long contexts",
+      "Context window vs effective context: what the model actually uses well",
+      "Sliding window and chunking strategies for documents longer than context"
+    ],
+    production: "Longer context = more GPU memory per request = fewer concurrent users. Design your system to minimize context bloat. Use summarization or RAG instead of stuffing everything in context. Monitor token usage per request — it's your biggest cost lever.",
+    avoid: "Don't assume filling the context window gives better results. Quality of attention degrades with irrelevant tokens.",
+    resource: { label: "Lost in the Middle — Stanford paper", url: "https://arxiv.org/abs/2307.03172" },
+    resource2: { label: "Anthropic context window docs", url: "https://docs.anthropic.com/en/docs/about-claude/models/overview" }
+  },
+  "Sampling & decoding": {
+    what: "After the model computes logits (scores) for every possible next token, sampling decides which token to pick. This is where creativity vs determinism is controlled.",
+    learn: [
+      "Greedy decoding: always pick the highest probability token — deterministic but repetitive",
+      "Temperature: scales logits before softmax. T<1 = sharper/more deterministic, T>1 = more random",
+      "Top-p (nucleus sampling): sample from smallest set of tokens whose cumulative probability ≥ p",
+      "Top-k: sample only from the k highest probability tokens",
+      "Beam search: keep N candidate sequences in parallel — used in translation, not chat LLMs"
+    ],
+    production: "Set temperature=0 for evals, classification, and structured output — you want determinism. Use temperature=0.7-1.0 for creative tasks. Never use high temperature for tool calls — it increases malformed JSON. Log your sampling params alongside every LLM call for reproducibility.",
+    avoid: "Don't set temperature=0 and expect 100% identical outputs — LLMs have non-determinism from GPU floating point.",
+    resource: { label: "Hugging Face generation strategies guide", url: "https://huggingface.co/docs/transformers/generation_strategies" },
+    resource2: { label: "OpenAI sampling docs", url: "https://platform.openai.com/docs/guides/text-generation" }
+  },
+  "Embeddings": {
+    what: "Dense vector representations of text where semantic similarity maps to geometric proximity. The output of a transformer encoder's final layer. The foundation of all RAG systems and semantic search.",
+    learn: [
+      "How embeddings are produced: mean pooling or [CLS] token from encoder output",
+      "Cosine similarity vs dot product vs Euclidean distance — when to use each",
+      "Dimensionality: 768d (BERT), 1536d (OpenAI ada-002), 3072d (text-embedding-3-large)",
+      "Matryoshka embeddings: truncatable to smaller dimensions without full quality loss",
+      "Bi-encoders (fast retrieval) vs cross-encoders (slow but accurate reranking)"
+    ],
+    production: "You cannot mix embeddings from different models — dimensions and spaces differ. Always store which model version produced an embedding alongside the vector. Embedding models have their own context limits (often 512-8192 tokens) — chunking is required before embedding.",
+    avoid: "Don't use general LLM outputs as embeddings — use dedicated embedding models. Don't embed full documents without chunking.",
+    resource: { label: "MTEB Leaderboard — best embedding models ranked", url: "https://huggingface.co/spaces/mteb/leaderboard" },
+    resource2: { label: "OpenAI embeddings guide", url: "https://platform.openai.com/docs/guides/embeddings" }
+  },
+  "Reasoning models": {
+    what: "Models that generate extended internal reasoning (a 'scratchpad') before producing a final answer. Chain-of-thought at training time makes them dramatically better at multi-step problems — math, code, planning.",
+    learn: [
+      "Chain-of-thought prompting: 'think step by step' vs trained CoT in o1/Claude style",
+      "Extended thinking / thinking tokens: budget tokens for internal reasoning before response",
+      "Reasoning traces: when they're visible (Claude) vs hidden (o1)",
+      "When to use reasoning models: complex multi-step tasks, not simple retrieval",
+      "Cost tradeoff: reasoning tokens cost money — don't use for simple tasks"
+    ],
+    production: "Use reasoning models for agent planning steps, complex code generation, and multi-step analysis. Don't use them for simple classification or retrieval — you're paying for thinking you don't need. Set thinking budget caps to control cost.",
+    avoid: "Don't assume more thinking = better output for all tasks. For factual lookup, reasoning models aren't worth the cost.",
+    resource: { label: "Anthropic extended thinking docs", url: "https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking" },
+    resource2: { label: "OpenAI o1 system card", url: "https://openai.com/index/openai-o1-system-card/" }
+  },
+  "Model benchmarks": {
+    what: "Standardized test suites that measure model capability across tasks. Critical for making model selection decisions and reading research papers critically.",
+    learn: [
+      "MMLU: 57-subject multiple choice, tests breadth of knowledge",
+      "HumanEval / SWE-bench: coding ability, real GitHub issues",
+      "HELM: holistic evaluation across accuracy, robustness, fairness",
+      "MATH / GSM8K: mathematical reasoning",
+      "How to read leaderboards critically — contamination, evaluation harness differences"
+    ],
+    production: "Don't choose a model based on benchmarks alone — run your own evals on your specific task distribution. Benchmark contamination is real (test data leaking into training). Build a small golden eval set from your production data and use that as the ground truth.",
+    avoid: "Don't trust a single benchmark. A model that tops MMLU may fail on your enterprise use case.",
+    resource: { label: "HELM — Stanford holistic evaluation", url: "https://crfm.stanford.edu/helm/" },
+    resource2: { label: "SWE-bench leaderboard", url: "https://www.swebench.com/" }
+  },
+
+  // Phase 2 - Prompt Engineering
+  "System prompts": {
+    what: "The persistent instruction layer that defines model behavior, persona, constraints, and output format before any user message. The most powerful lever you have over model output.",
+    learn: [
+      "Role definition: 'You are an expert X' — sets vocabulary and reasoning style",
+      "Behavioral constraints: what the model should and should not do",
+      "Output format specification: JSON schema, markdown structure, length limits",
+      "Context injection: company info, user profile, current date — what to put here vs user turn",
+      "System prompt vs user prompt — what belongs where for security and reliability"
+    ],
+    production: "Treat system prompts like code — version control them, test changes, track which version produced which output. Inject dynamic context (user role, permissions, current date) programmatically. Never trust user input that claims to override system instructions.",
+    avoid: "Don't put sensitive instructions users must not see in the system prompt alone — it's extractable via prompt injection.",
+    resource: { label: "Anthropic prompt engineering guide", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" },
+    resource2: { label: "OpenAI prompt engineering best practices", url: "https://platform.openai.com/docs/guides/prompt-engineering" }
+  },
+  "Few-shot prompting": {
+    what: "Providing examples of input→output pairs inside the prompt to teach the model the exact format and reasoning style you want — without any fine-tuning.",
+    learn: [
+      "Example structure: input/output pairs that match your exact task",
+      "How many examples: 3-5 is usually optimal, more rarely helps",
+      "Example selection: diverse, representative, covering edge cases",
+      "Chain-of-thought few-shot: show the reasoning steps, not just the answer",
+      "Dynamic few-shot: retrieve relevant examples from a store based on the query"
+    ],
+    production: "Dynamic few-shot retrieval (embedding your example library and retrieving the most similar examples at runtime) outperforms static few-shot by 15-30% on complex tasks. Store your examples in a vector DB alongside your other RAG content.",
+    avoid: "Don't use examples that contradict each other. Don't use more than ~10 — you're wasting context.",
+    resource: { label: "Anthropic few-shot prompting guide", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/use-examples" },
+    resource2: { label: "Few-shot learners paper (GPT-3)", url: "https://arxiv.org/abs/2005.14165" }
+  },
+  "Chain-of-thought": {
+    what: "Prompting the model to reason through a problem step-by-step before giving a final answer. Dramatically improves accuracy on multi-step reasoning tasks — math, logic, code.",
+    learn: [
+      "Zero-shot CoT: 'Think step by step' appended to the prompt",
+      "Few-shot CoT: provide examples with full reasoning shown",
+      "Self-consistency: sample multiple reasoning paths, take majority vote",
+      "Scratchpad pattern: explicit <thinking> block before <answer>",
+      "When CoT helps vs hurts — it adds latency and tokens"
+    ],
+    production: "For agent planning steps, always use CoT — the reasoning trace is also your audit log. Use XML tags (<thinking>, <answer>) to separate reasoning from output so you can parse reliably. Self-consistency (3-5 samples, majority vote) dramatically improves factual accuracy for high-stakes outputs.",
+    avoid: "Don't use CoT for simple lookup tasks — you're paying for thinking you don't need.",
+    resource: { label: "Chain-of-Thought Prompting — Wei et al.", url: "https://arxiv.org/abs/2201.11903" },
+    resource2: { label: "Anthropic CoT prompting guide", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/chain-of-thought" }
+  },
+  "XML / JSON structuring": {
+    what: "Using structured markup to make model outputs reliably parseable and to clearly delimit sections of complex prompts. The difference between a prototype and a production system.",
+    learn: [
+      "JSON mode / structured output: schema-enforced responses from the API",
+      "XML tags in prompts: <document>, <instructions>, <examples> for clear separation",
+      "Pydantic / TypeScript types as output schemas",
+      "Handling malformed JSON: retry logic, partial parsing strategies",
+      "Nested structures: when to use flat JSON vs hierarchical"
+    ],
+    production: "Always specify output schema in your system prompt AND use the API's structured output / JSON mode feature where available. Validate every response against your Pydantic schema. Log and alert on schema violations — they signal prompt drift.",
+    avoid: "Don't rely on 'respond in JSON' in the prompt alone without API-level enforcement — models can drift from format under long contexts.",
+    resource: { label: "Anthropic structured output guide", url: "https://docs.anthropic.com/en/docs/test-and-evaluate/strengthen-guardrails/increase-consistency" },
+    resource2: { label: "OpenAI structured outputs docs", url: "https://platform.openai.com/docs/guides/structured-outputs" }
+  },
+  "Prompt caching": {
+    what: "Reusing the computed KV cache for a shared prefix across multiple requests. If your system prompt is 10K tokens, caching avoids recomputing it on every call — cutting cost and latency dramatically.",
+    learn: [
+      "How prefix caching works: identical token prefix → cache hit",
+      "Anthropic cache_control headers: marking cacheable blocks",
+      "Cache TTL: typically 5 minutes — structure your system to maximize hits",
+      "What to cache: system prompt, RAG context, tool schemas, examples",
+      "Cache hit rate monitoring: track as a cost optimization metric"
+    ],
+    production: "Place stable content (system prompt, tool definitions) at the top of your context, dynamic content (user message, retrieved docs) at the bottom. This maximizes cache prefix length. 80-90% cache hit rates on system prompts can cut your input token costs by 60-90%.",
+    avoid: "Don't put user-specific dynamic content early in context — it breaks cache sharing across users.",
+    resource: { label: "Anthropic prompt caching docs", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching" },
+    resource2: { label: "OpenAI prompt caching guide", url: "https://platform.openai.com/docs/guides/prompt-caching" }
+  },
+  "Context compression": {
+    what: "Techniques to fit more relevant information into the context window by reducing token count without losing critical meaning. Essential for long-running agents and large document processing.",
+    learn: [
+      "Summarization: compress prior conversation turns before they exceed context",
+      "Selective retention: keep tool call results, discard intermediate reasoning",
+      "Hierarchical summarization: chunk → summarize chunks → summarize summaries",
+      "LLMLingua / LLMLingua-2: token-level compression using a small model",
+      "Sliding window: drop oldest tokens, always keep system prompt and recent context"
+    ],
+    production: "For long agent sessions, implement a MemoryDistillation step that summarizes completed task steps into compact state cards. Store these in a vector DB and retrieve only what's relevant for the current step. This is the difference between agents that work for 10 turns vs 100.",
+    avoid: "Don't compress indiscriminately — tool call results and error messages must be preserved exactly.",
+    resource: { label: "LLMLingua paper (Microsoft)", url: "https://arxiv.org/abs/2310.05736" },
+    resource2: { label: "LangChain memory guide", url: "https://python.langchain.com/docs/concepts/memory/" }
+  },
+  "Extended thinking": {
+    what: "API-level feature (Anthropic Claude, OpenAI o1) that gives the model a token budget to reason internally before producing a response. The model's scratchpad — you pay for it but don't see the full trace.",
+    learn: [
+      "Thinking budget: how to set max thinking tokens (1K-32K typical range)",
+      "When it helps: complex planning, multi-step math, ambiguous instructions",
+      "Streaming thinking blocks vs streaming final output",
+      "Cost model: thinking tokens cost the same as output tokens",
+      "Interplay with temperature: thinking models often use T=1 internally"
+    ],
+    production: "Use extended thinking for your agent's planning phase, not every tool call. Gate it behind task complexity scoring — simple tasks don't need expensive reasoning. Log thinking token usage separately to track cost by task type.",
+    avoid: "Don't enable maximum thinking budget for all requests — you'll 10x your costs for tasks that don't need it.",
+    resource: { label: "Anthropic extended thinking docs", url: "https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking" },
+    resource2: { label: "Claude thinking model guide", url: "https://docs.anthropic.com/en/docs/about-claude/models/overview" }
+  },
+
+  // Phase 3 - RAG
+  "Embeddings pipeline": {
+    what: "The complete data pipeline that converts raw documents into searchable vector representations: load → clean → chunk → embed → store. This is the foundation all RAG systems are built on.",
+    learn: [
+      "Document loading: PDFs, Word docs, web pages, databases — unstructured library",
+      "Cleaning: remove headers/footers, normalize whitespace, handle special chars",
+      "Chunking: split into segments that fit embedding model context (512-8192 tokens)",
+      "Batch embedding: efficient API calls with retry and rate limit handling",
+      "Upsert to vector store: store embedding + metadata + original text"
+    ],
+    production: "Track document versions — when source documents update, you need to re-embed and replace. Store chunk metadata: source file, page number, section, timestamp. Build idempotent pipelines so re-runs don't create duplicate vectors. Monitor embedding model latency and cost per document.",
+    avoid: "Don't embed without cleaning — HTML tags and formatting characters pollute the semantic space.",
+    resource: { label: "Unstructured.io — document parsing", url: "https://unstructured.io/" },
+    resource2: { label: "Hugging Face embedding pipeline tutorial", url: "https://huggingface.co/blog/getting-started-with-embeddings" }
+  },
+  "Vector databases": {
+    what: "Databases optimized for storing and querying high-dimensional embedding vectors using approximate nearest neighbor (ANN) algorithms. The retrieval layer in every RAG system.",
+    learn: [
+      "ANN algorithms: HNSW (best recall/speed tradeoff), IVF, PQ",
+      "pgvector: PostgreSQL extension — use if you already have Postgres",
+      "Pinecone: managed, serverless, easy to start",
+      "Qdrant: open source, Rust-based, best self-hosted option",
+      "Weaviate: built-in hybrid search, GraphQL API",
+      "Index types: flat (exact, slow at scale) vs HNSW (approximate, fast)"
+    ],
+    production: "pgvector is the pragmatic enterprise choice — your data stays in your existing DB, one less system to operate. Use HNSW index with ef_construction=128, m=16 as starting defaults. Monitor query latency at p95 — ANN performance degrades under write load.",
+    avoid: "Don't choose a vector DB based on benchmark numbers alone — operational simplicity matters more at enterprise scale.",
+    resource: { label: "pgvector GitHub and docs", url: "https://github.com/pgvector/pgvector" },
+    resource2: { label: "Vector DB comparison — Qdrant blog", url: "https://qdrant.tech/articles/vector-database-benchmark/" }
+  },
+  "Hybrid search": {
+    what: "Combining dense vector search (semantic similarity) with sparse keyword search (BM25/TF-IDF) to get the best of both worlds. Semantic search alone misses exact keyword matches; keyword search alone misses paraphrase.",
+    learn: [
+      "BM25: term frequency + inverse document frequency — the gold standard sparse retrieval",
+      "Dense retrieval: embedding similarity — captures semantic meaning",
+      "Reciprocal Rank Fusion (RRF): merge ranked lists from both systems",
+      "Alpha weighting: tune how much to weight dense vs sparse per query type",
+      "Sparse embeddings: SPLADE, learned sparse representations"
+    ],
+    production: "Hybrid search consistently outperforms pure vector search by 10-25% on recall in enterprise document search. Use RRF with k=60 as the default fusion strategy — it's robust and parameter-free. Always implement hybrid when your content contains product codes, IDs, or technical terms.",
+    avoid: "Don't skip sparse retrieval for technical/domain-specific content — exact match matters more than you expect.",
+    resource: { label: "Pinecone hybrid search guide", url: "https://www.pinecone.io/learn/hybrid-search-intro/" },
+    resource2: { label: "RRF paper — Cormack et al.", url: "https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf" }
+  },
+  "Reranking": {
+    what: "A second-stage model that takes the top-N retrieved candidates and reranks them by true relevance to the query. Cross-encoders see both query and document together — much more accurate than bi-encoder retrieval.",
+    learn: [
+      "Bi-encoder vs cross-encoder: retrieval speed vs reranking accuracy tradeoff",
+      "Cohere Rerank API: easiest managed reranker",
+      "BGE reranker: best open-source cross-encoder",
+      "FlashRank: ultra-fast local reranker",
+      "Optimal pipeline: retrieve top-50 → rerank → take top-5 for context"
+    ],
+    production: "Always rerank before injecting into LLM context. The retrieval stage optimizes for recall (get the right docs in the top-50); reranking optimizes for precision (put the best doc first). This two-stage approach is standard in production RAG and measurably reduces hallucination.",
+    avoid: "Don't rerank all documents — only the top candidates. Reranking 1000 docs is slow and wasteful.",
+    resource: { label: "Cohere Rerank API docs", url: "https://docs.cohere.com/docs/reranking" },
+    resource2: { label: "BGE reranker on Hugging Face", url: "https://huggingface.co/BAAI/bge-reranker-v2-m3" }
+  },
+  "Chunking strategies": {
+    what: "How you split documents before embedding fundamentally determines retrieval quality. Bad chunking is the most common reason RAG systems underperform.",
+    learn: [
+      "Fixed-size chunking: simple, fast, breaks semantic units",
+      "Sentence-based chunking: preserve complete sentences",
+      "Semantic chunking: split at topic/semantic boundaries using embeddings",
+      "Hierarchical chunking: small chunks for retrieval, larger parent chunks for context",
+      "Late chunking: embed full document, then pool sub-chunks — preserves long-range context"
+    ],
+    production: "Use hierarchical chunking in production: retrieve at the small chunk level (high precision), then expand to the parent chunk for LLM context (more complete information). Chunk size sweet spot is 256-512 tokens with 20% overlap. Tune overlap based on your document type.",
+    avoid: "Don't use fixed-size chunking for prose documents — it arbitrarily splits sentences and destroys coherence.",
+    resource: { label: "Chunking strategies guide — Greg Kamradt", url: "https://www.youtube.com/watch?v=8OJC21T2SL4" },
+    resource2: { label: "LlamaIndex chunking docs", url: "https://docs.llamaindex.ai/en/stable/module_guides/loading/node_parsers/" }
+  },
+  "Graph RAG": {
+    what: "Augmenting RAG with a knowledge graph — entities, relationships, and communities extracted from documents. Enables multi-hop reasoning and global summarization that vector search alone can't do.",
+    learn: [
+      "Entity extraction: NER to pull entities from documents",
+      "Relationship extraction: LLM-powered triplet extraction (subject, relation, object)",
+      "Community detection: graph clustering to find related entity groups",
+      "Microsoft GraphRAG: reference implementation with community summaries",
+      "Query routing: when to use graph vs vector retrieval"
+    ],
+    production: "GraphRAG dramatically outperforms vector RAG on questions that require connecting multiple documents or reasoning about relationships. Expensive to build (LLM calls for extraction) but queries are fast. Use for knowledge-intensive enterprise use cases — compliance, research, due diligence.",
+    avoid: "Don't build GraphRAG for simple Q&A over a small document set — the overhead isn't worth it.",
+    resource: { label: "Microsoft GraphRAG paper", url: "https://arxiv.org/abs/2404.16130" },
+    resource2: { label: "Microsoft GraphRAG GitHub", url: "https://github.com/microsoft/graphrag" }
+  },
+  "Agentic RAG": {
+    what: "RAG where the retrieval strategy itself is controlled by an agent — iterative retrieval, query rewriting, self-critique, and multi-step information gathering rather than a single retrieve-and-read pass.",
+    learn: [
+      "Query rewriting: LLM reformulates the user query for better retrieval",
+      "Iterative retrieval: retrieve → read → decide if more retrieval needed → repeat",
+      "Self-RAG: model generates retrieval tokens to decide when to retrieve",
+      "HyDE: generate a hypothetical answer, embed it, use that for retrieval",
+      "Multi-query retrieval: generate N query variants, merge results"
+    ],
+    production: "Multi-query retrieval (3-5 query variants, RRF fusion) with a single additional LLM call gives a reliable 15-25% recall improvement over single-query RAG. Implement as the default for any enterprise search product. Iterative retrieval is for research assistants and complex analysis tasks.",
+    avoid: "Don't use iterative retrieval for latency-sensitive applications — each loop adds 1-3 seconds.",
+    resource: { label: "Self-RAG paper", url: "https://arxiv.org/abs/2310.11511" },
+    resource2: { label: "LangChain agentic RAG tutorial", url: "https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_agentic_rag/" }
+  },
+  "HyDE": {
+    what: "Hypothetical Document Embeddings — generate a hypothetical answer to the query, embed that answer, and use its embedding for retrieval. The hypothetical answer is closer in embedding space to real answers than the query is.",
+    learn: [
+      "Why it works: query embeddings and document embeddings exist in different spaces",
+      "Implementation: query → LLM → hypothetical doc → embed → retrieve",
+      "When it helps most: short queries, technical domains, question-answer mismatches",
+      "Variants: HyDE with multiple hypothetical docs, averaged embeddings",
+      "Cost tradeoff: one extra LLM call per query"
+    ],
+    production: "HyDE gives 10-20% retrieval improvement for technical domains where user queries are short and document chunks are long. Gate it behind query length — only apply for queries under 15 tokens. Cache hypothetical embeddings for repeated query patterns.",
+    avoid: "Don't use HyDE when the LLM's hypothetical answer might be hallucinated — it can retrieve irrelevant content confidently.",
+    resource: { label: "HyDE paper — Gao et al.", url: "https://arxiv.org/abs/2212.10496" },
+    resource2: { label: "LangChain HyDE implementation", url: "https://python.langchain.com/docs/techniques/hyde/" }
+  },
+
+  // Phase 4 - Agents
+  "ReAct pattern": {
+    what: "Reason + Act — the foundational agent loop where the model alternates between reasoning about what to do and taking an action (tool call), then observing the result before reasoning again.",
+    learn: [
+      "ReAct loop: Thought → Action → Observation → Thought → ... → Final Answer",
+      "Thought: internal reasoning about what tool to call and why",
+      "Action: structured tool call with arguments",
+      "Observation: tool result injected back into context",
+      "Termination: when to stop looping vs continue"
+    ],
+    production: "Always add a max_iterations guard to your ReAct loop — agents can loop indefinitely if the model can't find a satisfying answer. Log every Thought/Action/Observation triplet for debugging and audit. The observation quality (what you feed back to the model) is as important as the tool itself.",
+    avoid: "Don't let agents self-terminate without a condition check — always validate the final answer against your task definition.",
+    resource: { label: "ReAct paper — Yao et al.", url: "https://arxiv.org/abs/2210.03629" },
+    resource2: { label: "LangGraph ReAct agent tutorial", url: "https://langchain-ai.github.io/langgraph/tutorials/introduction/" }
+  },
+  "Tool use / function calling": {
+    what: "The mechanism by which LLMs call external functions — APIs, databases, code execution — in a structured, reliable way. The backbone of all agentic systems.",
+    learn: [
+      "Tool schema: name, description, JSON Schema for parameters",
+      "Parallel tool calls: model calls multiple tools simultaneously",
+      "Tool result injection: how to structure tool outputs back to the model",
+      "Error handling: what to return when a tool fails",
+      "Tool selection quality: how model chooses among tools — description quality matters"
+    ],
+    production: "Tool descriptions are your most important prompt. Spend as much time on them as on your system prompt. Include: what the tool does, when to use it, what it returns, example inputs. Validate all tool arguments against your schema before executing — never trust the model's output directly.",
+    avoid: "Don't give agents access to destructive tools (delete, overwrite) without a confirmation step or human-in-the-loop gate.",
+    resource: { label: "Anthropic tool use docs", url: "https://docs.anthropic.com/en/docs/build-with-claude/tool-use" },
+    resource2: { label: "OpenAI function calling guide", url: "https://platform.openai.com/docs/guides/function-calling" }
+  },
+  "Agent memory": {
+    what: "The full taxonomy of how agents store and retrieve information across time. The CoALA framework identifies seven memory types — mastering all of them separates AI engineers from AI tinkerers.",
+    learn: [
+      "In-context memory: the current conversation window — fast, expensive, ephemeral",
+      "Episodic memory: past interaction logs, retrievable by similarity",
+      "Semantic memory: distilled facts and knowledge, vector-indexed",
+      "Procedural memory: learned strategies and playbooks (typed cards in a store)",
+      "Prospective memory: future intentions and scheduled tasks (the most overlooked)",
+      "Sensory + working memory: immediate perceptual buffer and active task state"
+    ],
+    production: "Most production agents only implement in-context memory (context window). The top 1% implement episodic + semantic memory via a vector store, with a distillation job that promotes successful execution patterns into procedural memory. Prospective memory requires a scheduler (Spring Batch / Celery) + a monitoring agent.",
+    avoid: "Don't conflate 'memory' with 'the context window.' That's only one of seven types.",
+    resource: { label: "CoALA paper — cognitive architectures for agents", url: "https://arxiv.org/abs/2309.02427" },
+    resource2: { label: "LangMem — memory for agents", url: "https://langchain-ai.github.io/langmem/" }
+  },
+  "Multi-agent systems": {
+    what: "Architectures where multiple specialized agents collaborate — an orchestrator decomposes tasks and delegates to subagents who execute in parallel or sequence, with results aggregated back.",
+    learn: [
+      "Orchestrator pattern: planner agent → specialized subagents → aggregator",
+      "Fan-out: parallel execution of independent subtasks across agent pool",
+      "Agent pool: homogeneous agents consuming tasks from a queue",
+      "Sequential chaining: output of one agent is input to the next",
+      "Shared state: how agents communicate intermediate results"
+    ],
+    production: "Design for failure from day one — any subagent can fail. Implement timeout + retry at the orchestrator level. Use async execution for fan-out (Task/CompletableFuture in Java, asyncio.gather in Python). Track agent-level latency and error rate separately to identify bottlenecks.",
+    avoid: "Don't build multi-agent systems for tasks a single agent can do. Coordination overhead is real.",
+    resource: { label: "Anthropic multi-agent architecture guide", url: "https://docs.anthropic.com/en/docs/build-with-claude/build-with-claude/agentic-systems" },
+    resource2: { label: "LangGraph multi-agent tutorial", url: "https://langchain-ai.github.io/langgraph/tutorials/multi_agent/multi-agent-collaboration/" }
+  },
+  "Planning": {
+    what: "How agents decompose complex goals into executable subtask sequences, handle uncertainty, and replan when things go wrong. The difference between an agent that works for 3 steps and one that works for 30.",
+    learn: [
+      "Task decomposition: LLM-generated step plans from high-level goals",
+      "Hypothesis trees (Arbor framework): structured parallel hypothesis exploration",
+      "Plan validation: checking if a plan is feasible before executing",
+      "Replanning: detecting when a plan has failed and generating a new one",
+      "Hierarchical planning: high-level plan → mid-level subtasks → low-level tool calls"
+    ],
+    production: "Separate the planning step from the execution step — don't let a single agent prompt do both. Generate a plan, validate it (optionally with a critic agent), then execute step by step with progress tracking. Store plans in your agent's working memory with completion status.",
+    avoid: "Don't let agents plan and execute in a single prompt — it leads to inconsistent execution and hard-to-debug failures.",
+    resource: { label: "Arbor framework paper (arXiv:2606.11926)", url: "https://arxiv.org/abs/2606.11926" },
+    resource2: { label: "Plan-and-Solve prompting paper", url: "https://arxiv.org/abs/2305.04091" }
+  },
+  "MCP protocol": {
+    what: "Model Context Protocol — Anthropic's open standard for connecting LLMs to external tools, data sources, and services via a standardized server/client protocol. Replacing one-off API integrations.",
+    learn: [
+      "MCP architecture: host (Claude/app) ↔ client ↔ MCP server ↔ data source",
+      "Three primitives: Tools (actions), Resources (data), Prompts (templates)",
+      "MCP server implementation: stdio vs SSE transport",
+      "Authentication: OAuth 2.0 integration with MCP servers",
+      "MCP vs function calling: MCP is composable and standardized, function calling is per-model"
+    ],
+    production: "Build your internal tools as MCP servers — they become instantly usable by Claude, any MCP-compatible client, and future AI systems. This is the API design pattern for the agentic era. Start with your most-used internal APIs and wrap them as MCP servers.",
+    avoid: "Don't build one-off tool integrations if an MCP server for that service already exists — check the MCP registry first.",
+    resource: { label: "MCP official documentation", url: "https://modelcontextprotocol.io/" },
+    resource2: { label: "MCP GitHub — servers and SDKs", url: "https://github.com/modelcontextprotocol" }
+  },
+  "A2A protocol": {
+    what: "Agent-to-Agent — Google's open protocol for agents to discover, communicate with, and delegate tasks to other agents regardless of which framework built them. The inter-agent HTTP standard.",
+    learn: [
+      "Agent Card: JSON manifest describing an agent's capabilities and endpoint",
+      "Task lifecycle: submitted → working → completed/failed",
+      "Streaming: agents stream partial results back to callers",
+      "Authentication: how agents verify each other's identity",
+      "A2A vs MCP: MCP connects agents to tools/data, A2A connects agents to agents"
+    ],
+    production: "Implement Agent Cards for every agent in your platform — this gives you a registry of capabilities that the orchestrator can query dynamically. A2A enables capability discovery without hardcoding which agent does what — the orchestrator asks 'who can fix a CI failure?' and the right agent responds.",
+    avoid: "Don't confuse A2A with MCP — they're complementary. MCP = agent↔tool, A2A = agent↔agent.",
+    resource: { label: "Google A2A protocol GitHub", url: "https://github.com/google/A2A" },
+    resource2: { label: "A2A specification docs", url: "https://google.github.io/A2A/" }
+  },
+  "LangGraph / CrewAI": {
+    what: "Graph-based agent orchestration frameworks. LangGraph models agent workflows as stateful directed graphs — nodes are agents/tools, edges are transitions. CrewAI abstracts multi-agent teams with roles and goals.",
+    learn: [
+      "LangGraph state machine: define state schema, nodes, conditional edges",
+      "LangGraph persistence: checkpointing agent state for resumability",
+      "CrewAI crew: agents with roles, tasks, and a process (sequential/hierarchical)",
+      "Human-in-the-loop: interrupting graph execution for approval steps",
+      "When to use each: LangGraph for complex stateful flows, CrewAI for team simulations"
+    ],
+    production: "LangGraph's persistence layer (checkpoint saver) is its killer feature for production — agents can pause, resume after failures, and be inspected mid-execution. Use LangGraph for any long-running workflow where resumability matters. CrewAI is faster to prototype but less production-ready.",
+    avoid: "Don't use CrewAI for production financial workflows — limited observability and harder to audit.",
+    resource: { label: "LangGraph documentation", url: "https://langchain-ai.github.io/langgraph/" },
+    resource2: { label: "CrewAI documentation", url: "https://docs.crewai.com/" }
+  },
+  "Computer use": {
+    what: "Agents that can directly control a web browser or desktop GUI — click, type, scroll, screenshot, navigate. Enables automation of any task a human could do with a computer.",
+    learn: [
+      "Playwright: browser automation, screenshot capture, DOM interaction",
+      "Browser Use: LLM-native browser control library",
+      "Claude Computer Use API: model-native screen understanding and control",
+      "Vision loop: screenshot → LLM → action → screenshot → repeat",
+      "Reliability patterns: retry on stale element, scroll-into-view before click"
+    ],
+    production: "Computer use is powerful but brittle — UI changes break agents. Always prefer an API if one exists. Use computer use as the last resort for systems with no API. Build screenshot logging for every action — it's your only debugging tool when the agent gets stuck.",
+    avoid: "Don't deploy computer use agents against production systems without sandboxing — they can take unintended destructive actions.",
+    resource: { label: "Claude computer use docs", url: "https://docs.anthropic.com/en/docs/build-with-claude/computer-use" },
+    resource2: { label: "Browser Use GitHub", url: "https://github.com/browser-use/browser-use" }
+  },
+  "Coding agents": {
+    what: "Agents specifically designed for software engineering tasks — reading codebases, writing code, running tests, fixing bugs, and raising PRs autonomously. The most mature agentic use case today.",
+    learn: [
+      "Claude Code: Anthropic's CLI coding agent, CLAUDE.md for context",
+      "SWE-bench: the standard benchmark for coding agent evaluation",
+      "Codebase indexing: how agents navigate large repositories",
+      "Test-driven loops: write test → run → fix → repeat",
+      "PR generation: diff creation, commit messages, branch management"
+    ],
+    production: "Coding agents need a sandboxed execution environment (Docker) — never let them run code directly on production infrastructure. Implement a review gate before any PR is raised. Use CLAUDE.md to give the agent codebase-specific context: architecture decisions, naming conventions, test patterns.",
+    avoid: "Don't use coding agents without test coverage — you need automated verification of every change.",
+    resource: { label: "Claude Code documentation", url: "https://docs.anthropic.com/en/docs/claude-code/overview" },
+    resource2: { label: "SWE-bench leaderboard", url: "https://www.swebench.com/" }
+  },
+
+  // Phase 5 - Gateways
+  "LiteLLM": {
+    what: "Open source proxy that provides a unified OpenAI-compatible API across 100+ LLM providers. One integration, any model — swap providers without changing application code.",
+    learn: [
+      "Proxy setup: Docker deployment, config.yaml for routing rules",
+      "Provider configuration: add keys for Anthropic, OpenAI, Azure, Bedrock",
+      "Load balancing: distribute load across multiple provider keys",
+      "Fallback: automatic retry on a different provider when primary fails",
+      "Cost tracking: token usage and cost per model, per team, per user"
+    ],
+    production: "Run LiteLLM as your internal LLM gateway — all application code hits your proxy, not provider APIs directly. This gives you cost visibility, rate limit pooling, and the ability to swap models without code changes. Expose it as an internal service with your own auth layer on top.",
+    avoid: "Don't expose LiteLLM directly to the internet without auth — it's a proxy to your paid API keys.",
+    resource: { label: "LiteLLM documentation", url: "https://docs.litellm.ai/" },
+    resource2: { label: "LiteLLM GitHub", url: "https://github.com/BerriAI/litellm" }
+  },
+  "OpenRouter / Portkey": {
+    what: "Managed LLM gateway services. OpenRouter aggregates dozens of models under one API. Portkey adds observability, caching, and routing on top of any LLM provider.",
+    learn: [
+      "OpenRouter: model routing by price/performance, pay-per-use",
+      "Portkey: middleware layer — add caching, retries, logging to any LLM call",
+      "Virtual keys: manage provider credentials without exposing them to apps",
+      "Portkey Config: declarative routing rules, fallback chains, weight-based routing",
+      "When to use managed vs self-hosted gateway"
+    ],
+    production: "Portkey is the fastest way to add observability and caching to an existing LLM application without refactoring. Drop-in middleware that wraps your existing calls. OpenRouter is best for experimentation — try 20 models with one API key. Switch to LiteLLM (self-hosted) for production control.",
+    avoid: "Don't use OpenRouter for enterprise production without understanding their data retention and privacy policies.",
+    resource: { label: "Portkey documentation", url: "https://portkey.ai/docs" },
+    resource2: { label: "OpenRouter documentation", url: "https://openrouter.ai/docs" }
+  },
+  "Model routing": {
+    what: "Automatically directing each request to the most appropriate model based on task complexity, cost, latency, or capability — rather than always using the most expensive model.",
+    learn: [
+      "Cost-based routing: cheap model for simple tasks, expensive for complex",
+      "Capability routing: route code tasks to coding-specialist models",
+      "Latency routing: route real-time interactions to fastest models",
+      "Complexity scoring: classify request complexity before routing",
+      "Router-of-routers: hierarchical routing for large model fleets"
+    ],
+    production: "Implement a CostAwareModelRouter that classifies each request as SIMPLE/MEDIUM/COMPLEX and routes accordingly. Simple = Haiku/Flash, Medium = Sonnet, Complex = Opus. This alone typically cuts LLM costs by 40-60% with minimal quality loss. Track routing accuracy — is the complexity classifier right?",
+    avoid: "Don't route sensitive data to third-party models without data residency controls.",
+    resource: { label: "LiteLLM routing docs", url: "https://docs.litellm.ai/docs/routing" },
+    resource2: { label: "RouteLLM paper — routing by difficulty", url: "https://arxiv.org/abs/2406.18665" }
+  },
+  "Fallback chains": {
+    what: "Automatic failover to a backup model or provider when the primary fails due to rate limits, errors, or downtime. Essential for production reliability.",
+    learn: [
+      "Fallback hierarchy: primary → secondary → tertiary provider",
+      "Error classification: rate limit vs timeout vs model error — different fallback strategies",
+      "Circuit breaker: stop sending to a failing provider temporarily",
+      "Exponential backoff: don't hammer a rate-limited API",
+      "Fallback quality: ensure backup model meets minimum quality threshold"
+    ],
+    production: "Configure at minimum: primary (Anthropic/OpenAI) → fallback (Azure OpenAI) → fallback (Bedrock). Different providers have different uptime patterns — outages rarely affect all simultaneously. Test your fallback chain quarterly by intentionally triggering it.",
+    avoid: "Don't fall back to a significantly weaker model for critical tasks — better to queue and retry than return a bad answer.",
+    resource: { label: "LiteLLM fallbacks guide", url: "https://docs.litellm.ai/docs/completion/reliable_completions" },
+    resource2: { label: "Resilience4j circuit breaker (Java)", url: "https://resilience4j.readme.io/docs/circuitbreaker" }
+  },
+  "Cost tracking": {
+    what: "Metering token usage and translating it to dollar cost per request, user, team, and feature. The difference between an AI system you understand and one that surprises you at month-end.",
+    learn: [
+      "Token counting: tiktoken, Anthropic token counting API",
+      "Cost per model: input vs output token pricing (output is 3-5x more expensive)",
+      "Attribution: tag requests by user/team/feature for allocation",
+      "Budget enforcement: hard caps per user/day, soft alerts",
+      "Cost anomaly detection: alert when daily spend exceeds baseline by 2σ"
+    ],
+    production: "Instrument every LLM call with: model, prompt tokens, completion tokens, latency, user ID, feature tag. Store in TimescaleDB or your observability platform. Build a cost dashboard showing daily spend by feature — it reveals which features are economically viable and which are money sinks.",
+    avoid: "Don't rely solely on provider billing — by the time the invoice arrives, the damage is done. Track in real time.",
+    resource: { label: "Anthropic token counting docs", url: "https://docs.anthropic.com/en/docs/build-with-claude/token-counting" },
+    resource2: { label: "LangSmith cost tracking", url: "https://docs.smith.langchain.com/observability/how_to_guides/trace_with_langsmith" }
+  },
+  "Rate limit management": {
+    what: "Handling the provider-imposed limits on requests per minute and tokens per minute without dropping requests or degrading user experience.",
+    learn: [
+      "RPM and TPM limits: requests per minute and tokens per minute — both apply",
+      "Token bucket algorithm: smooth rate limiting with bursting",
+      "Request queuing: queue overflow requests rather than dropping them",
+      "Per-user limits: prevent one user from exhausting the shared pool",
+      "Header parsing: providers return rate limit headers — use them to backoff proactively"
+    ],
+    production: "Implement a token bucket rate limiter in your gateway layer. Use Redis for distributed rate limit state across multiple instances. Return a 429 with Retry-After to clients rather than silently queuing — let callers decide whether to wait or degrade gracefully.",
+    avoid: "Don't implement naive sleep-based backoff in async code — it blocks the thread and degrades throughput.",
+    resource: { label: "Anthropic rate limits docs", url: "https://docs.anthropic.com/en/api/rate-limits" },
+    resource2: { label: "LiteLLM rate limiting guide", url: "https://docs.litellm.ai/docs/proxy/users" }
+  },
+  "Semantic caching": {
+    what: "Caching LLM responses not just for exact query matches but for semantically similar queries — if two questions mean the same thing, return the cached answer.",
+    learn: [
+      "Similarity threshold: cosine similarity cutoff for cache hit (typically 0.95-0.98)",
+      "Cache key: embed the query, find nearest neighbor in cache store",
+      "TTL strategy: how long cached answers remain valid",
+      "Cache invalidation: when source data changes, purge related cache entries",
+      "GPTCache / Redis + pgvector: implementation options"
+    ],
+    production: "Semantic caching is extremely effective for enterprise chatbots where users ask the same questions with different wording. 30-50% cache hit rates are common, directly reducing cost and latency. Set similarity threshold conservatively (0.97+) to avoid false hits on safety-critical content.",
+    avoid: "Don't cache responses to queries about real-time data (prices, availability) — the cached answer will be wrong.",
+    resource: { label: "GPTCache GitHub", url: "https://github.com/zilliztech/GPTCache" },
+    resource2: { label: "Redis semantic cache guide", url: "https://redis.io/docs/latest/develop/interact/search-and-query/query/semantic-search/" }
+  },
+
+  // Phase 6 - Guardrails
+  "Input/output validation": {
+    what: "Systematically checking what goes into and comes out of your LLM calls — schema validation, content classification, length limits, and format enforcement.",
+    learn: [
+      "Input schema: validate user input before it reaches the LLM",
+      "Output schema: Pydantic/Zod enforcement on LLM responses",
+      "Content classification: route sensitive inputs to stricter models/prompts",
+      "Length limits: max tokens in, max tokens out — prevent runaway generation",
+      "Retry on schema violation: re-prompt with error message if output is malformed"
+    ],
+    production: "Every LLM call in production should have: (1) input sanitization, (2) schema-validated output, (3) retry logic on validation failure, (4) fallback value if retries fail. Build this as a wrapper around your LLM client so it applies universally.",
+    avoid: "Don't parse LLM output with regex — use proper schema validation. Regex breaks on formatting variations.",
+    resource: { label: "Instructor — structured LLM outputs", url: "https://python.useinstructor.com/" },
+    resource2: { label: "Pydantic documentation", url: "https://docs.pydantic.dev/" }
+  },
+  "Prompt injection defense": {
+    what: "Preventing malicious user input from hijacking your system prompt or making the model do things outside its intended scope. One of the highest-risk attack vectors for production AI systems.",
+    learn: [
+      "Direct injection: user tries to override system prompt ('Ignore previous instructions')",
+      "Indirect injection: malicious content in retrieved documents that hijacks the agent",
+      "Delimiter-based defense: wrap user input in XML tags, tell model to treat as data not instructions",
+      "Input sanitization: strip known injection patterns before sending to LLM",
+      "Privilege separation: agent actions require explicit tool calls, not natural language override"
+    ],
+    production: "Always wrap user input in explicit XML delimiters and instruct the model that content inside is untrusted user data. For RAG systems, separate retrieved content from instructions using clear tags. Treat the LLM as an untrusted executor — validate its action requests before executing them.",
+    avoid: "Don't assume instruction-following means injection-proof. Current models are easily manipulated by well-crafted injections.",
+    resource: { label: "OWASP LLM Top 10 — Prompt Injection", url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/" },
+    resource2: { label: "Anthropic prompt injection mitigation", url: "https://docs.anthropic.com/en/docs/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks" }
+  },
+  "PII detection & redaction": {
+    what: "Automatically identifying and removing personally identifiable information before it enters LLM context or appears in outputs. Non-negotiable for GDPR, HIPAA, and PCI-DSS compliance.",
+    learn: [
+      "Presidio: Microsoft's open source PII detection library",
+      "Entity types: name, email, phone, SSN, credit card, address, date of birth",
+      "Detection methods: regex, NER models, rule-based — layered approach",
+      "Redaction strategies: replace with [REDACTED], pseudonymize, tokenize",
+      "Reversible tokenization: replace PII with tokens, restore in response"
+    ],
+    production: "Run PII detection on both input (before LLM) and output (before user). Use reversible tokenization for cases where the LLM needs to reason about entities — replace 'John Smith' with 'PERSON_001', let the LLM work with tokens, restore names in the final response.",
+    avoid: "Don't rely on a single detection method — regex misses context-dependent PII, NER misses structured formats like SSNs.",
+    resource: { label: "Microsoft Presidio GitHub", url: "https://github.com/microsoft/presidio" },
+    resource2: { label: "Presidio documentation", url: "https://microsoft.github.io/presidio/" }
+  },
+  "Jailbreak prevention": {
+    what: "Preventing users from manipulating the model into violating its safety constraints through adversarial prompts, roleplay scenarios, or social engineering.",
+    learn: [
+      "Constitutional AI: model trained to refuse based on a set of principles",
+      "Refusal classifiers: secondary model that checks if output violates policy",
+      "Input classifiers: detect adversarial intent before it reaches the main model",
+      "Harmful content taxonomy: define what your system should never produce",
+      "Red-teaming: systematically attack your own system to find gaps"
+    ],
+    production: "Add a lightweight classifier (fine-tuned small model or embedding-based) that scores every input for adversarial intent. Log all near-misses and refusals — they're your red-team dataset. Run monthly red-team exercises with an adversarial human to find new attack patterns.",
+    avoid: "Don't rely only on the model's own safety training — it can be bypassed with sufficiently creative prompts.",
+    resource: { label: "Anthropic safety research", url: "https://www.anthropic.com/research" },
+    resource2: { label: "Guardrails AI documentation", url: "https://www.guardrailsai.com/docs" }
+  },
+  "Hallucination detection": {
+    what: "Automatically detecting when an LLM generates factually incorrect or unsupported information. The hardest open problem in production AI reliability.",
+    learn: [
+      "Groundedness scoring: does the output follow from the retrieved context?",
+      "Entailment models: NLI (natural language inference) to check claim support",
+      "Self-consistency: sample multiple completions, check if they agree",
+      "Citation verification: if model cites a source, verify the claim appears there",
+      "RAGAS: RAG-specific evaluation framework for hallucination metrics"
+    ],
+    production: "For RAG systems, always measure groundedness — every claim in the output should be traceable to a retrieved chunk. Use RAGAS metrics (faithfulness, answer relevancy, context precision) as automated evals in your CI pipeline. Alert when faithfulness drops below 0.85.",
+    avoid: "Don't confuse confident tone with factual accuracy — models hallucinate with complete confidence.",
+    resource: { label: "RAGAS evaluation framework", url: "https://docs.ragas.io/" },
+    resource2: { label: "TruLens — hallucination triad", url: "https://www.trulens.org/getting_started/core_concepts/rag_triad/" }
+  },
+  "Guardrails AI / NeMo": {
+    what: "Frameworks for defining and enforcing behavioral policies on LLM inputs and outputs through programmable rules, validators, and a structured Rail specification.",
+    learn: [
+      "Guardrails AI: Rail spec, validators, input/output guard pipeline",
+      "NVIDIA NeMo Guardrails: Colang language for dialogue flow control",
+      "Validator types: format, content, length, topic, toxicity",
+      "Guard pipeline: input guard → LLM → output guard → user",
+      "Custom validators: build domain-specific validators for your use case"
+    ],
+    production: "NeMo Guardrails is the stronger choice for enterprise — its Colang dialogue control lets you define exactly which conversation flows are permitted, not just what content is blocked. Use for regulated domains where compliance requires auditable behavioral constraints.",
+    avoid: "Don't use guardrails as a substitute for proper system prompt design — they're the last line of defense, not the first.",
+    resource: { label: "Guardrails AI documentation", url: "https://www.guardrailsai.com/docs" },
+    resource2: { label: "NeMo Guardrails GitHub", url: "https://github.com/NVIDIA/NeMo-Guardrails" }
+  },
+  "Data governance": {
+    what: "The policies, processes, and technical controls that determine how AI systems access, store, process, and retain data — especially critical in regulated industries.",
+    learn: [
+      "Data lineage: track where data came from, how it was transformed, where it went",
+      "Consent management: user data used for RAG must have appropriate consent",
+      "Retention policies: how long to keep LLM inputs/outputs and why",
+      "Access controls: RBAC on which agents can access which data sources",
+      "Audit logging: immutable log of every data access for compliance"
+    ],
+    production: "Build data governance in before your first production deployment, not after. Implement: (1) immutable audit log of all LLM calls with user/data attribution, (2) data classification labels on all RAG sources, (3) access control enforcement at the retrieval layer — agents should only retrieve data their user has permission to see.",
+    avoid: "Don't store user conversation data indefinitely by default — define retention periods and implement automatic deletion.",
+    resource: { label: "NIST AI RMF — AI risk management framework", url: "https://www.nist.gov/system/files/documents/2023/01/26/AI RMF 1.0.pdf" },
+    resource2: { label: "OWASP LLM Security", url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/" }
+  },
+
+  // Phase 7 - Observability
+  "Tracing": {
+    what: "Recording the complete execution path of an LLM request — every agent step, tool call, retrieval, and model invocation — as structured spans with timing and metadata.",
+    learn: [
+      "Span structure: operation, inputs, outputs, latency, model, token counts",
+      "Trace hierarchy: root request → agent steps → tool calls → LLM calls",
+      "OpenTelemetry: standard instrumentation format for AI traces",
+      "Distributed tracing: correlating spans across microservices",
+      "Trace sampling: how to handle high-volume production tracing cost"
+    ],
+    production: "Every agent execution must produce a complete trace. Attach: user ID, session ID, model version, prompt hash, tool call results, and token counts to every span. Store traces for 30 days minimum for debugging and compliance. Build trace search — 'show me all traces where tool X failed.'",
+    avoid: "Don't log raw prompt/response content in high-volume production without PII scrubbing — you'll create compliance risks.",
+    resource: { label: "LangSmith tracing documentation", url: "https://docs.smith.langchain.com/" },
+    resource2: { label: "OpenTelemetry for LLMs — OpenInference", url: "https://github.com/Arize-ai/openinference" }
+  },
+  "LLM-as-judge": {
+    what: "Using a powerful LLM to evaluate the quality of outputs from another LLM — scoring on dimensions like correctness, groundedness, helpfulness, and format compliance. Scalable human-like evaluation.",
+    learn: [
+      "Rubric design: define exactly what each dimension means and how to score it",
+      "Scoring format: structured JSON output with score + explanation + cannot_determine",
+      "Bias mitigation: judge models favor verbose outputs — add explicit rubric guidance",
+      "Pairwise vs pointwise: comparing two outputs vs scoring one",
+      "Judge model selection: use the strongest available model as judge"
+    ],
+    production: "Use temperature=0 for all judge calls — you want determinism. Validate judge quality by comparing its scores against human ratings on a sample. If judge-human agreement < 0.7, your rubric needs work. Log all judge decisions with full rubric — they're your audit trail.",
+    avoid: "Don't use the same model as both agent and judge — you'll get self-serving evaluations.",
+    resource: { label: "Judging LLM-as-a-Judge paper", url: "https://arxiv.org/abs/2306.05685" },
+    resource2: { label: "RAGAS LLM judge implementation", url: "https://docs.ragas.io/" }
+  },
+  "Code-based graders": {
+    what: "Deterministic, programmatic evaluation of agent outputs — checking tool selection, argument validity, execution outcomes, and output format without any LLM involvement. Fast, cheap, 100% reproducible.",
+    learn: [
+      "Tool selection accuracy: did the agent call the right tools in the right order?",
+      "Argument validation: were tool arguments correctly formed and within expected ranges?",
+      "Execution outcome: did the environment reach the expected state?",
+      "Output format: does the response match the required schema?",
+      "Sequence efficiency: did the agent take unnecessary extra steps?"
+    ],
+    production: "Code-based graders should be your first eval layer — run them on every agent execution. They're free, instant, and catch 60-70% of failures deterministically. Layer LLM-as-judge on top for the semantic dimensions that code can't check. Never rely solely on LLM evaluation — it's expensive and non-deterministic.",
+    avoid: "Don't write fragile string-matching graders — normalize and tokenize before comparison.",
+    resource: { label: "Braintrust eval framework", url: "https://www.braintrustdata.com/" },
+    resource2: { label: "Anthropic evals cookbook", url: "https://github.com/anthropics/anthropic-cookbook/tree/main/misc/evals" }
+  },
+  "pass@k vs pass^k": {
+    what: "Two fundamentally different reliability metrics for agent systems. pass@k = probability at least one of k trials succeeds. pass^k = probability ALL k trials succeed. The right metric depends on your deployment model.",
+    learn: [
+      "pass@k formula: 1 - (1 - p)^k where p is single-trial success rate",
+      "pass^k formula: p^k — much stricter, degrades fast",
+      "When to use pass@k: research, best-of-N generation, creative tasks",
+      "When to use pass^k: production agents that run once, automated workflows",
+      "Practical example: 75% single-trial rate → pass^3 = 42% (not 75%!)"
+    ],
+    production: "Enterprise automated agents need pass^k semantics — a CI fix agent that works 3/5 times is not production-ready. If your agent's pass^3 is below 0.80, fix reliability before scaling. Use pass@k only for tasks where you can show multiple outputs to a human and let them pick.",
+    avoid: "Don't report pass@k for fully automated agents — it hides the true reliability picture.",
+    resource: { label: "HumanEval pass@k paper", url: "https://arxiv.org/abs/2107.03374" },
+    resource2: { label: "Agent reliability evaluation guide — Anthropic", url: "https://docs.anthropic.com/en/docs/test-and-evaluate/evaluate-your-task" }
+  },
+  "Capability evals": {
+    what: "Evaluation suites that measure what an agent can do — designed to challenge the system at the frontier of its ability. Low pass rates are expected; the goal is tracking improvement over time.",
+    learn: [
+      "Task selection: tasks the agent currently fails 30-60% of the time",
+      "Diversity: cover the full distribution of real-world inputs",
+      "Difficulty progression: easy → medium → hard variants of the same task type",
+      "Automated vs human: what can be automated vs needs human judgment",
+      "Capability thresholds: at what pass rate does a capability 'graduate' to regression?"
+    ],
+    production: "Run capability evals weekly or on every model upgrade. When a task type crosses 90% pass rate, promote it to your regression suite and replace it with a harder capability challenge. This keeps your eval suite evergreen and prevents it from becoming trivially easy as your system improves.",
+    avoid: "Don't let capability evals stagnate — a suite with 95%+ pass rate is measuring what you've already solved.",
+    resource: { label: "Anthropic model evaluation docs", url: "https://docs.anthropic.com/en/docs/test-and-evaluate/evaluate-your-task" },
+    resource2: { label: "HELM — holistic evaluation", url: "https://crfm.stanford.edu/helm/" }
+  },
+  "Regression evals": {
+    what: "High-passing evaluation suites that catch performance regressions when models, prompts, or infrastructure change. Your safety net against 'it worked before, why did it break?'",
+    learn: [
+      "Pass rate threshold: regression suite should pass at >95% always",
+      "Regression alert: automated notification when any task drops below threshold",
+      "Suite composition: tasks the system has proven it can handle reliably",
+      "Change gating: block deployments that fail regression eval",
+      "Regression root cause: which change (model? prompt? tool?) caused the drop?"
+    ],
+    production: "Gate every deployment on your regression eval suite. If any task drops below threshold, the deployment is blocked automatically. Run regression evals in CI on every PR that touches prompts, agent logic, or model configuration. This is how you maintain reliability at velocity.",
+    avoid: "Don't skip regression evals 'just this once' for an urgent hotfix — that's when regressions sneak in.",
+    resource: { label: "LangSmith testing and evaluation", url: "https://docs.smith.langchain.com/evaluation" },
+    resource2: { label: "Braintrust CI/CD eval integration", url: "https://www.braintrustdata.com/docs/guides/ci" }
+  },
+  "Drift detection": {
+    what: "Automated monitoring that detects when agent behavior, output quality, or cost patterns deviate from baseline — before users notice the degradation.",
+    learn: [
+      "Behavioral drift: agent taking different action sequences for the same inputs",
+      "Output drift: measurable shift in output quality scores over time",
+      "Token drift: unusual increase in token usage per request",
+      "Statistical methods: CUSUM, EWMA for detecting gradual drift",
+      "Drift attribution: was it the model, the prompt, the data, or external tools?"
+    ],
+    production: "Instrument three drift signals: (1) output quality score moving average, (2) token usage per request, (3) tool call distribution (which tools are called most). Set alert thresholds at 2σ from 7-day baseline. Drift is often the first signal of a model update, data quality issue, or prompt injection campaign.",
+    avoid: "Don't only monitor hard failures (errors, timeouts) — quality degradation is invisible unless you measure it.",
+    resource: { label: "Arize AI drift monitoring", url: "https://arize.com/blog-course/llm-drift-detection/" },
+    resource2: { label: "Langfuse monitoring docs", url: "https://langfuse.com/docs/analytics/overview" }
+  },
+  "LangSmith / Langfuse / Helicone": {
+    what: "Observability platforms specifically designed for LLM applications — trace storage, evaluation tracking, cost dashboards, and dataset management in one place.",
+    learn: [
+      "LangSmith: tightest LangChain integration, datasets, human feedback collection",
+      "Langfuse: open source, self-hostable, strong eval framework, great UI",
+      "Helicone: lightweight, proxy-based, zero code change instrumentation",
+      "What to track: traces, evals, costs, user feedback, latency percentiles",
+      "Self-hosted vs managed: data residency requirements for enterprise"
+    ],
+    production: "Langfuse is the top-1% choice for enterprise — self-hostable (keep data in your VPC), strong eval framework, and actively developed. Instrument your application with the Langfuse SDK, route all LLM calls through it, and build a weekly eval run in your CI pipeline. You'll have the observability stack that most teams don't.",
+    avoid: "Don't use different observability tools for different parts of your stack — consolidate to one platform for unified trace correlation.",
+    resource: { label: "Langfuse documentation", url: "https://langfuse.com/docs" },
+    resource2: { label: "LangSmith documentation", url: "https://docs.smith.langchain.com/" }
+  },
+
+  // Phases 8-13 selected key skills
+  "Streaming responses": {
+    what: "Sending LLM output tokens to the client as they're generated rather than waiting for the complete response. Reduces perceived latency from seconds to milliseconds for first token.",
+    learn: [
+      "Server-Sent Events (SSE): HTTP streaming protocol for text token delivery",
+      "WebSocket streaming: bi-directional, better for interactive agents",
+      "Backpressure handling: what to do when client can't consume fast enough",
+      "Partial parsing: parse structured output incrementally as it streams",
+      "Stream interruption: handle mid-stream errors and connection drops"
+    ],
+    production: "Always stream for user-facing LLM calls — the perceived quality difference is enormous. Buffer 10-20 tokens before flushing if you need to do lightweight processing. For agentic tool calls, don't stream the tool execution — only stream the final reasoning/response to the user.",
+    avoid: "Don't stream raw tokens directly to UI if you're extracting structured data — wait for the full response.",
+    resource: { label: "Anthropic streaming guide", url: "https://docs.anthropic.com/en/api/messages-streaming" },
+    resource2: { label: "MDN SSE documentation", url: "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events" }
+  },
+  "Retry & timeout logic": {
+    what: "The reliability layer around every LLM call — handling transient failures, rate limits, and timeouts gracefully without dropping requests or creating cascading failures.",
+    learn: [
+      "Exponential backoff with jitter: base * 2^attempt + random(0, base)",
+      "Max retry limits: 3-5 attempts before failing permanently",
+      "Timeout tiers: connection timeout (5s), read timeout (30-120s depending on model)",
+      "Idempotency: is it safe to retry this request?",
+      "Circuit breaker pattern: stop retrying a failing provider entirely for N seconds"
+    ],
+    production: "Use Resilience4j (Java) or Tenacity (Python) for retry logic — don't hand-roll it. Configure: 3 retries, exponential backoff starting at 1s, circuit breaker opening after 5 consecutive failures. Always set a hard timeout — an LLM call that never returns is worse than one that fails fast.",
+    avoid: "Don't retry on authentication errors or invalid request errors — only on rate limits and transient 5xx errors.",
+    resource: { label: "Resilience4j documentation", url: "https://resilience4j.readme.io/docs/getting-started" },
+    resource2: { label: "Tenacity Python retry library", url: "https://tenacity.readthedocs.io/" }
+  },
+  "Frontier APIs": {
+    what: "The production APIs for the world's most capable models — Anthropic Claude, OpenAI GPT, Google Gemini. Understanding their differences, pricing, and quirks is essential for model selection.",
+    learn: [
+      "Claude API: Messages API, tool use, extended thinking, prompt caching",
+      "OpenAI API: Chat completions, assistants, structured outputs, batch API",
+      "Google Gemini API: multimodal-first, 1M context, grounding with Search",
+      "Model tiers: Haiku/Flash/Mini (fast+cheap) vs Sonnet/GPT-4o (balanced) vs Opus/o1 (powerful)",
+      "Batch API: 50% cost reduction for non-real-time workloads"
+    ],
+    production: "Use the Batch API (Anthropic and OpenAI both offer it) for any non-realtime workload — evals, document processing, bulk enrichment. 50% cost reduction with 24h turnaround. For real-time production, always implement fallback across at least two providers.",
+    avoid: "Don't lock your application to a single provider's SDK — use an abstraction layer (LiteLLM or Spring AI) from day one.",
+    resource: { label: "Anthropic API documentation", url: "https://docs.anthropic.com/" },
+    resource2: { label: "OpenAI API documentation", url: "https://platform.openai.com/docs/overview" }
+  },
+  "Frontier models": {
+    what: "The most capable publicly available LLMs — knowing each model's strengths, weaknesses, pricing, and best use cases is a core AI engineering skill.",
+    learn: [
+      "Claude (Anthropic): best for long context, coding, instruction following, safety",
+      "GPT-4o (OpenAI): strong multimodal, wide ecosystem, real-time audio",
+      "Gemini 2.0 (Google): 1M context, grounding with Google Search, multimodal",
+      "Grok (xAI): real-time X/Twitter data, strong reasoning",
+      "How to choose: task type, latency, cost, data residency, context needs"
+    ],
+    production: "Don't pick one model and use it for everything. Build a model selection matrix for your use cases: long document analysis → Gemini (1M context), code → Claude Opus, cost-sensitive at scale → Haiku/Flash, real-time search → Grok. Benchmark on YOUR data, not general benchmarks.",
+    avoid: "Don't choose a model based on hype. Run a 3-task benchmark on your production distribution.",
+    resource: { label: "Artificial Analysis — model benchmarks and pricing", url: "https://artificialanalysis.ai/" },
+    resource2: { label: "LMSYS Chatbot Arena leaderboard", url: "https://chat.lmsys.org/" }
+  },
+  "GitHub portfolio": {
+    what: "Your working proof — not what you claim to know, but what you've actually built. The single most important career asset for an AI engineer in 2026.",
+    learn: [
+      "README quality: problem statement, architecture diagram, setup instructions, demo",
+      "Project selection: real problems, not tutorials — RAG over real docs, agents for real tasks",
+      "Code quality signals: tests, CI/CD, clean structure, good commit messages",
+      "Demo-ability: every project should have a runnable demo or video",
+      "Contribution pattern: consistent commits show sustained engagement"
+    ],
+    production: "Build 3-5 deep projects rather than 20 shallow ones. Each should demonstrate: a real problem, a thoughtful architecture, production-quality code, and measurable results. Sanitize real production work into portfolio pieces — redact company data, keep the architecture and lessons.",
+    avoid: "Don't publish tutorial completions or course projects — build something that solves a problem you actually had.",
+    resource: { label: "GitHub Pages for project hosting", url: "https://pages.github.com/" },
+    resource2: { label: "How to write a great README — makeareadme.com", url: "https://www.makeareadme.com/" }
+  },
+  "Technical writing": {
+    what: "The compounding skill that multiplies everything else — explaining what you built, why you made the decisions you made, and what you learned. The highest-ROI career investment for a senior engineer.",
+    learn: [
+      "Structure: problem → solution → architecture → results → lessons learned",
+      "Diagrams: architecture diagrams, sequence diagrams, decision trees",
+      "Code examples: working, minimal, reproducible",
+      "Platform strategy: Substack (depth), LinkedIn (reach), Dev.to (SEO)",
+      "Consistency: one post per week compounds over 6-12 months"
+    ],
+    production: "Write about what you're building in production. Sanitized real production problems outperform theoretical articles 10:1 in engagement. Your ARIA eval architecture, your RAG pipeline decisions, your cost optimization results — that's content no one else can write.",
+    avoid: "Don't write 'intro to AI' articles when you're building production systems — write at the level you're working at.",
+    resource: { label: "Substack — technical writing platform", url: "https://substack.com/" },
+    resource2: { label: "The Technical Writing Handbook", url: "https://developers.google.com/tech-writing" }
+  },
+"Async / parallel tool calls": {
+    what: "Executing multiple independent tool calls concurrently instead of sequentially, dramatically reducing agent latency when an agent needs to gather information from several sources.",
+    learn: [
+      "Native parallel tool calls: modern LLM APIs return multiple tool calls in one response",
+      "Async execution: Java CompletableFuture, Python asyncio.gather, concurrent dispatch",
+      "Dependency graphs: which tool calls can run in parallel vs which depend on prior results",
+      "Partial failure handling: what happens when 1 of 4 parallel calls fails",
+      "Result aggregation: merging parallel tool outputs back into one context block"
+    ],
+    production: "When an LLM returns 3+ parallel tool calls, dispatch them concurrently with CompletableFuture.allOf() or asyncio.gather() rather than looping sequentially. This alone can cut agent step latency by 3-5x. Always set a per-call timeout so one slow tool doesn't block the others.",
+    avoid: "Don't naively parallelize tool calls that have order dependencies — check the dependency graph first.",
+    resource: { label: "Anthropic parallel tool use guide", url: "https://docs.anthropic.com/en/docs/build-with-claude/tool-use" },
+    resource2: { label: "Python asyncio.gather docs", url: "https://docs.python.org/3/library/asyncio-task.html#asyncio.gather" }
+  },
+  "Latency budgets": {
+    what: "Setting explicit time targets for each component of your AI pipeline so you can identify and fix the slowest path before it impacts user experience.",
+    learn: [
+      "P50/P95/P99: median vs tail latency — production systems are judged on tail",
+      "Latency budget allocation: split total budget across retrieval, LLM call, post-processing",
+      "Time-to-first-token (TTFT) vs total generation time — different metrics matter for different UX",
+      "Identifying the slow path: tracing breakdown to find the bottleneck component",
+      "SLA design: what latency guarantee can you realistically commit to?"
+    ],
+    production: "Set a budget per pipeline stage: retrieval <200ms, reranking <100ms, LLM TTFT <800ms, full generation <5s. Alert when P95 exceeds budget for any stage. Most production AI latency problems come from retrieval/reranking, not the LLM call itself — measure before optimizing.",
+    avoid: "Don't optimize the LLM call latency before measuring where time is actually being spent in your pipeline.",
+    resource: { label: "Google SRE book — latency", url: "https://sre.google/sre-book/monitoring-distributed-systems/" },
+    resource2: { label: "Langfuse latency tracking", url: "https://langfuse.com/docs/analytics/overview" }
+  },
+  "Cost optimization": {
+    what: "Systematically reducing LLM spend without sacrificing quality — through model routing, caching, prompt efficiency, and batch processing.",
+    learn: [
+      "Prompt token reduction: remove redundant instructions, compress few-shot examples",
+      "Model downsizing: test if a cheaper model achieves equivalent quality for your task",
+      "Output token limits: cap max_tokens to prevent runaway generation costs",
+      "Batch API usage: 50% discount for non-real-time workloads",
+      "Cache hit rate optimization: structure prompts to maximize prefix caching"
+    ],
+    production: "Run a quarterly cost audit: for each feature, what's the cost per request and is the model tier justified? Most teams over-provision model capability. A/B test cheaper models against your eval suite — if quality holds within tolerance, downgrade and save 60-80% on that feature's cost.",
+    avoid: "Don't optimize cost before you have quality evals in place — you need to verify cheaper models don't silently degrade output.",
+    resource: { label: "Anthropic pricing and cost guide", url: "https://docs.anthropic.com/en/docs/about-claude/pricing" },
+    resource2: { label: "LiteLLM cost tracking dashboard", url: "https://docs.litellm.ai/docs/proxy/cost_tracking" }
+  },
+  "WebSockets / SSE": {
+    what: "The two primary protocols for streaming real-time data from server to client. SSE is simpler and HTTP-native; WebSockets are bi-directional and better for interactive agent UIs.",
+    learn: [
+      "SSE: one-way server→client stream over standard HTTP, auto-reconnect built in",
+      "WebSockets: full duplex, lower overhead for high-frequency bidirectional messages",
+      "When to use SSE: streaming LLM token output, simple progress updates",
+      "When to use WebSockets: interactive agents where client sends interrupts/cancellations",
+      "Connection management: heartbeats, reconnection logic, graceful degradation"
+    ],
+    production: "Use SSE for standard LLM token streaming — it works through corporate proxies and load balancers more reliably than WebSockets. Reserve WebSockets for cases where the client needs to interrupt or steer the agent mid-execution (e.g., 'stop' button during long-running tasks).",
+    avoid: "Don't default to WebSockets for simple streaming — SSE is simpler to operate and debug at scale.",
+    resource: { label: "MDN Server-Sent Events guide", url: "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events" },
+    resource2: { label: "Spring WebFlux SSE guide", url: "https://docs.spring.io/spring-framework/reference/web/webflux.html" }
+  },
+  "Python async": {
+    what: "Asynchronous programming in Python using asyncio — essential for AI engineering because LLM calls are I/O-bound and benefit enormously from concurrent execution.",
+    learn: [
+      "async/await syntax: coroutines, event loop fundamentals",
+      "asyncio.gather: run multiple coroutines concurrently",
+      "FastAPI: async-native web framework, the standard for AI service APIs",
+      "Async generators: streaming responses token by token",
+      "Common pitfalls: blocking calls inside async functions, mixing sync/async incorrectly"
+    ],
+    production: "FastAPI + asyncio is the standard production stack for Python AI services. Always use async HTTP clients (httpx, aiohttp) for LLM API calls — synchronous requests in an async app will block your entire event loop. Profile for accidental blocking calls — they're the most common async bug.",
+    avoid: "Don't mix sync database drivers in an async FastAPI app — use async drivers (asyncpg, motor) or you'll bottleneck on every DB call.",
+    resource: { label: "Real Python — async IO guide", url: "https://realpython.com/async-io-python/" },
+    resource2: { label: "FastAPI documentation", url: "https://fastapi.tiangolo.com/" }
+  },
+  "REST API design": {
+    what: "Designing clean, versioned, well-documented HTTP APIs — the interface layer every AI service needs regardless of what's happening inside.",
+    learn: [
+      "Resource naming: nouns not verbs, consistent pluralization",
+      "Versioning strategy: URL path vs header-based versioning",
+      "Error contracts: consistent error response schema across all endpoints",
+      "OpenAPI/Swagger: auto-generated docs from code annotations",
+      "Idempotency keys: critical for AI endpoints that might be retried"
+    ],
+    production: "AI endpoints need idempotency keys more than typical REST APIs — clients will retry on timeout, and you don't want to trigger duplicate expensive LLM calls or duplicate side effects (like raising a PR twice). Always include request IDs in responses for traceability.",
+    avoid: "Don't expose internal agent state or reasoning traces in your public API response — keep that in your observability layer only.",
+    resource: { label: "Microsoft REST API guidelines", url: "https://github.com/microsoft/api-guidelines" },
+    resource2: { label: "OpenAPI specification", url: "https://swagger.io/specification/" }
+  },
+  "PostgreSQL + pgvector": {
+    what: "Using PostgreSQL as both your relational database and vector store via the pgvector extension — one database for structured data and embeddings, simplifying your enterprise stack.",
+    learn: [
+      "pgvector installation and extension setup",
+      "Vector column types: vector(n) for fixed-dimension embeddings",
+      "Distance operators: <-> (L2), <=> (cosine), <#> (inner product)",
+      "HNSW index creation and tuning parameters",
+      "Hybrid queries: joining relational filters with vector similarity search"
+    ],
+    production: "pgvector lets you write a single SQL query that filters by relational columns (user_id, date_range, status) AND ranks by vector similarity — something that requires complex orchestration with separate vector DBs. This is the enterprise-pragmatic choice when you already run Postgres.",
+    avoid: "Don't use pgvector at extreme scale (100M+ vectors) without careful index tuning — dedicated vector DBs handle that scale more gracefully.",
+    resource: { label: "pgvector GitHub", url: "https://github.com/pgvector/pgvector" },
+    resource2: { label: "Supabase pgvector guide", url: "https://supabase.com/docs/guides/ai/vector-columns" }
+  },
+  "Redis": {
+    what: "An in-memory data store used for caching, session management, rate limiting, and pub/sub messaging — a workhorse component in nearly every production AI system.",
+    learn: [
+      "Caching patterns: cache-aside, write-through, TTL strategies",
+      "Rate limiting: token bucket and sliding window implementations",
+      "Pub/sub: real-time event distribution between services",
+      "Redis Streams: lightweight message queue for agent task distribution",
+      "Redis as vector store: RediSearch module for semantic caching"
+    ],
+    production: "Use Redis for: semantic cache storage, distributed rate limiting state, session/conversation state for stateless agent services, and pub/sub for streaming agent progress to multiple subscribers. It's the connective tissue of a scalable AI backend.",
+    avoid: "Don't use Redis as your primary data store for anything that needs durability guarantees beyond its persistence options.",
+    resource: { label: "Redis documentation", url: "https://redis.io/docs/latest/" },
+    resource2: { label: "Redis for AI applications guide", url: "https://redis.io/docs/latest/develop/ai/" }
+  },
+  "Docker": {
+    what: "Containerization technology that packages your application and its dependencies into a portable, reproducible unit — essential for deploying AI services consistently across environments.",
+    learn: [
+      "Dockerfile basics: base images, layer caching, multi-stage builds",
+      "Multi-stage builds: separate build and runtime stages for smaller images",
+      "Docker Compose: orchestrating multi-container local development",
+      "GPU passthrough: nvidia-docker for self-hosted model inference",
+      "Image optimization: minimizing image size for faster deployment"
+    ],
+    production: "Multi-stage builds are essential for AI services — separate your build environment (with all dev dependencies) from your runtime image (minimal, just what's needed). For Python AI services, this can shrink images from 2GB+ to under 500MB.",
+    avoid: "Don't bake secrets or API keys into Docker images — use environment variables or secret management at runtime.",
+    resource: { label: "Docker documentation", url: "https://docs.docker.com/" },
+    resource2: { label: "Docker multi-stage builds guide", url: "https://docs.docker.com/build/building/multi-stage/" }
+  },
+  "Git & CI/CD": {
+    what: "Version control and automated pipeline practices — for AI systems this extends beyond code to prompts, eval datasets, and model configurations, all of which need versioning and testing.",
+    learn: [
+      "Git branching strategy: trunk-based vs GitFlow for AI feature development",
+      "CI pipeline: lint → unit test → eval suite → build → deploy",
+      "Prompt versioning: treating prompts as code, tracked in git",
+      "Eval gating: blocking merges that fail the regression eval suite",
+      "Rollback strategy: fast rollback for prompt/model config changes"
+    ],
+    production: "Version your prompts and agent configurations in git alongside code — not in a database or admin UI that bypasses code review. Run your regression eval suite as a CI gate on every PR that touches prompts or agent logic. This is what separates rigorous AI teams from ones that ship regressions silently.",
+    avoid: "Don't let prompt changes bypass your normal code review and CI process — they're as impactful as code changes.",
+    resource: { label: "GitHub Actions documentation", url: "https://docs.github.com/en/actions" },
+    resource2: { label: "Trunk-based development guide", url: "https://trunkbaseddevelopment.com/" }
+  },
+  "Spring AI (Java)": {
+    what: "Spring's official framework for building AI applications in Java — providing ChatClient abstractions, vector store integrations, advisor chains, and MCP support that fit naturally into existing Spring Boot applications.",
+    learn: [
+      "ChatClient: fluent API for LLM calls, similar to RestClient/WebClient patterns",
+      "Advisor chain: middleware pattern for logging, caching, RAG injection",
+      "VectorStore abstraction: pluggable backend (pgvector, Pinecone, Redis)",
+      "Function calling: @Tool annotations for exposing Java methods as LLM tools",
+      "MCP client/server support: native Spring integration for MCP protocol"
+    ],
+    production: "Spring AI's advisor pattern is the right place to implement cross-cutting concerns: cost tracking, prompt caching headers, retry logic, and RAG context injection — without touching your business logic. Use VectorStore abstraction so you can swap pgvector for another backend without rewriting application code.",
+    avoid: "Don't bypass the ChatClient abstraction with raw HTTP calls to LLM providers — you lose the advisor chain benefits.",
+    resource: { label: "Spring AI reference documentation", url: "https://docs.spring.io/spring-ai/reference/" },
+    resource2: { label: "Spring AI GitHub", url: "https://github.com/spring-projects/spring-ai" }
+  },
+  "MCP SDKs": {
+    what: "Official software development kits for building MCP servers and clients in various languages — Python, TypeScript, Java, Kotlin — enabling standardized tool/resource exposure.",
+    learn: [
+      "Server SDK: defining tools, resources, and prompts in your language of choice",
+      "Client SDK: connecting to and consuming MCP servers from your application",
+      "Transport options: stdio (local), SSE/HTTP (remote)",
+      "Schema definition: JSON Schema for tool parameters",
+      "Testing: MCP Inspector tool for debugging server implementations"
+    ],
+    production: "Use the MCP Inspector during development to test your server in isolation before wiring it into an agent. For enterprise internal tools, build MCP servers with the Java/TypeScript SDK and deploy them as standard microservices — they're just HTTP services that speak a standard protocol.",
+    avoid: "Don't build a custom protocol when MCP solves the same problem with broader ecosystem compatibility.",
+    resource: { label: "MCP SDK documentation", url: "https://modelcontextprotocol.io/docs/sdk" },
+    resource2: { label: "MCP Inspector tool", url: "https://github.com/modelcontextprotocol/inspector" }
+  },
+  "vLLM": {
+    what: "A high-throughput, memory-efficient inference engine for serving open-weight LLMs — using PagedAttention to dramatically improve GPU memory utilization and request throughput.",
+    learn: [
+      "PagedAttention: virtual memory-style management of the KV cache",
+      "Continuous batching: dynamically batch incoming requests instead of static batching",
+      "Tensor parallelism: splitting a model across multiple GPUs",
+      "Quantization support: AWQ, GPTQ for reduced memory footprint",
+      "OpenAI-compatible API: drop-in replacement endpoint"
+    ],
+    production: "If you're self-hosting open-weight models (Llama, Qwen, Mistral) for cost or data residency reasons, vLLM is the production standard — 2-4x throughput improvement over naive HuggingFace serving. Deploy behind your LiteLLM gateway as just another provider.",
+    avoid: "Don't self-host unless you have a clear cost or compliance reason — frontier APIs are usually more cost-effective below very high volume.",
+    resource: { label: "vLLM documentation", url: "https://docs.vllm.ai/" },
+    resource2: { label: "vLLM GitHub", url: "https://github.com/vllm-project/vllm" }
+  },
+  "Ollama": {
+    what: "A simple local model runner for open-weight LLMs — designed for development, prototyping, and lightweight self-hosted deployment without the complexity of vLLM.",
+    learn: [
+      "Model pulling: ollama pull <model> downloads quantized GGUF models",
+      "Local API: OpenAI-compatible endpoint on localhost",
+      "GGUF quantization: 4-bit/8-bit model compression for consumer hardware",
+      "Modelfile: customizing system prompts and parameters per model",
+      "When to use: local dev, offline demos, privacy-sensitive prototyping"
+    ],
+    production: "Ollama is for development and prototyping, not production serving — use it to test agent logic locally without API costs before deploying against frontier APIs or vLLM. Great for offline demos and CI testing where you don't want external API dependencies.",
+    avoid: "Don't use Ollama for production serving at any meaningful scale — it's not designed for high-throughput concurrent serving.",
+    resource: { label: "Ollama documentation", url: "https://github.com/ollama/ollama" },
+    resource2: { label: "Ollama model library", url: "https://ollama.com/library" }
+  },
+  "AWS Bedrock": {
+    what: "AWS's managed service for accessing foundation models (Claude, Llama, Titan) with enterprise features — VPC integration, IAM-based access control, and knowledge base/agent abstractions.",
+    learn: [
+      "Model access: requesting and enabling specific foundation models",
+      "Bedrock Agents: managed agent orchestration with action groups",
+      "Knowledge Bases: managed RAG with built-in vector store",
+      "Guardrails: Bedrock's built-in content filtering and PII redaction",
+      "IAM integration: fine-grained access control per model/agent"
+    ],
+    production: "If your organization is AWS-native, Bedrock gives you Claude access with the security and compliance posture (VPC, IAM, CloudTrail) that enterprise security teams require — often easier to get approved than direct Anthropic API access. Use Bedrock Guardrails as an additional safety layer.",
+    avoid: "Don't assume Bedrock has feature parity with the native Anthropic API — some advanced features (latest extended thinking configs) may lag.",
+    resource: { label: "AWS Bedrock documentation", url: "https://docs.aws.amazon.com/bedrock/" },
+    resource2: { label: "Claude on Bedrock guide", url: "https://docs.anthropic.com/en/api/claude-on-amazon-bedrock" }
+  },
+  "Google Vertex AI": {
+    what: "Google Cloud's managed AI platform offering Gemini and Claude models with grounding via Google Search, enterprise security controls, and integrated MLOps tooling.",
+    learn: [
+      "Model Garden: access to Gemini, Claude, and open-weight models",
+      "Grounding with Google Search: real-time factual grounding for responses",
+      "Vertex AI Agent Builder: managed agent orchestration",
+      "Vector Search: managed vector database for RAG",
+      "IAM and VPC Service Controls for enterprise security"
+    ],
+    production: "Vertex AI's grounding with Google Search is a unique differentiator — useful for agents that need real-time factual accuracy beyond training data cutoff. If your org is GCP-native, this is your path to Claude and Gemini with the compliance posture security teams expect.",
+    avoid: "Don't rely on grounding for domains where Google Search results themselves might be unreliable or outdated.",
+    resource: { label: "Vertex AI documentation", url: "https://cloud.google.com/vertex-ai/docs" },
+    resource2: { label: "Claude on Vertex AI guide", url: "https://docs.anthropic.com/en/api/claude-on-vertex-ai" }
+  },
+  "Azure AI Foundry": {
+    what: "Microsoft's enterprise AI platform unifying Azure OpenAI Service, model catalog, content safety, and managed agent infrastructure — the default choice for Microsoft-ecosystem enterprises.",
+    learn: [
+      "Azure OpenAI Service: enterprise SLA-backed access to GPT models",
+      "Content Safety: built-in moderation and harm detection",
+      "Managed endpoints: deploying and scaling model inference",
+      "Prompt flow: visual pipeline builder for LLM applications",
+      "Azure AI Search: managed hybrid search and RAG infrastructure"
+    ],
+    production: "If your bank/enterprise already runs on Azure with established compliance approval, Azure AI Foundry is often the fastest path to production — the security review is already partially done at the platform level. Use Azure AI Search for RAG if you want a fully managed retrieval stack.",
+    avoid: "Don't assume Azure OpenAI has identical model behavior to OpenAI's direct API — there can be version lag and configuration differences.",
+    resource: { label: "Azure AI Foundry documentation", url: "https://learn.microsoft.com/en-us/azure/ai-foundry/" },
+    resource2: { label: "Azure OpenAI Service docs", url: "https://learn.microsoft.com/en-us/azure/ai-services/openai/" }
+  },
+  "Kubernetes": {
+    what: "The container orchestration platform that most enterprise AI workloads eventually run on — managing scaling, GPU scheduling, and resilience for self-hosted inference and agent services.",
+    learn: [
+      "Pod and deployment basics: how containerized services are scheduled",
+      "Horizontal Pod Autoscaling: scaling agent services based on load",
+      "GPU node pools: scheduling inference workloads onto GPU-equipped nodes",
+      "Helm charts: templated deployment configuration for AI services",
+      "Service mesh basics: Istio/Linkerd for inter-service communication in multi-agent systems"
+    ],
+    production: "Use Kubernetes when you're self-hosting inference (vLLM) or running many microservice-style agents at scale. For most enterprise AI applications calling frontier APIs, standard application deployment (not necessarily K8s) is sufficient — don't over-engineer infrastructure before you need it.",
+    avoid: "Don't adopt Kubernetes complexity for a single AI service with modest traffic — it adds operational overhead that may not be justified.",
+    resource: { label: "Kubernetes documentation", url: "https://kubernetes.io/docs/home/" },
+    resource2: { label: "KubeAI — Kubernetes for AI workloads", url: "https://github.com/substratusai/kubeai" }
+  },
+  "GPU inference basics": {
+    what: "Understanding how GPUs accelerate LLM inference — memory bandwidth, quantization, and parallelism strategies that determine throughput and cost when self-hosting models.",
+    learn: [
+      "Memory bandwidth bottleneck: why inference is memory-bound, not compute-bound",
+      "Quantization: FP16 → INT8 → INT4, tradeoffs between speed and quality",
+      "Tensor parallelism: splitting model weights across multiple GPUs",
+      "Batch size impact: throughput vs latency tradeoff",
+      "GPU selection: A100/H100 for production, consumer GPUs for development"
+    ],
+    production: "If self-hosting, quantization (especially AWQ/GPTQ 4-bit) gives you 2-4x more throughput per GPU with minimal quality loss for most tasks. Always benchmark your specific quantized model against your eval suite — quality degradation varies significantly by model and quantization method.",
+    avoid: "Don't quantize models used for high-stakes reasoning tasks without rigorous eval comparison against full precision.",
+    resource: { label: "Hugging Face quantization guide", url: "https://huggingface.co/docs/transformers/quantization/overview" },
+    resource2: { label: "vLLM performance tuning guide", url: "https://docs.vllm.ai/en/latest/performance/optimization.html" }
+  },
+  "Vision APIs": {
+    what: "Model capabilities for understanding images — document parsing, chart reading, object detection, and visual question answering through multimodal LLM APIs.",
+    learn: [
+      "Image input formats: base64, URL-based, multiple images per request",
+      "Document understanding: extracting structured data from scanned documents",
+      "Chart and diagram reading: interpreting visual data representations",
+      "Resolution and tiling: how models handle high-resolution images",
+      "Cost implications: images consume significant token budget"
+    ],
+    production: "Vision APIs are increasingly replacing dedicated OCR pipelines for document understanding — they handle layout, tables, and handwriting better than traditional OCR. For high-volume document processing, benchmark cost: vision API calls are more expensive per document than specialized OCR but require far less engineering.",
+    avoid: "Don't send unnecessarily high-resolution images — downscale to the model's effective resolution to save tokens and cost.",
+    resource: { label: "Anthropic vision documentation", url: "https://docs.anthropic.com/en/docs/build-with-claude/vision" },
+    resource2: { label: "OpenAI vision guide", url: "https://platform.openai.com/docs/guides/vision" }
+  },
+  "Image generation": {
+    what: "Models that generate images from text prompts — DALL-E, Flux, Stable Diffusion — used for content creation, prototyping, and synthetic data generation.",
+    learn: [
+      "Diffusion models: the core generative mechanism behind modern image models",
+      "Prompt engineering for images: style descriptors, composition, negative prompts",
+      "Flux: current state-of-the-art open-weight image model",
+      "API integration: DALL-E via OpenAI, Stable Diffusion via Replicate/local",
+      "Use cases beyond art: synthetic training data, UI mockups, marketing assets"
+    ],
+    production: "Image generation is increasingly used for synthetic test data generation and rapid prototyping of UI concepts. For production content generation, always implement content moderation on generated outputs — image models can produce unexpected results from adversarial prompts.",
+    avoid: "Don't use generated images for anything requiring factual accuracy (e.g., depicting real documents or real people) — they're prone to artifacts.",
+    resource: { label: "Black Forest Labs Flux documentation", url: "https://blackforestlabs.ai/" },
+    resource2: { label: "OpenAI image generation guide", url: "https://platform.openai.com/docs/guides/image-generation" }
+  },
+  "OCR & document AI": {
+    what: "Extracting structured text and data from scanned documents, PDFs, and images — a critical pipeline component for enterprise document processing at scale.",
+    learn: [
+      "Traditional OCR: Tesseract, layout-aware extraction",
+      "Vision-LLM-based extraction: using multimodal models for complex layouts",
+      "Form field extraction: structured data from invoices, forms, contracts",
+      "Table extraction: preserving tabular structure from scanned documents",
+      "Confidence scoring: knowing when extraction needs human review"
+    ],
+    production: "For high-volume, well-structured documents (invoices, standard forms), traditional OCR + rule-based extraction is more cost-effective. For complex, varied documents (contracts, mixed-format reports), vision-LLM extraction handles edge cases traditional OCR misses. Hybrid: OCR for structure, LLM for semantic extraction.",
+    avoid: "Don't trust OCR output without confidence scoring — route low-confidence extractions to human review queues.",
+    resource: { label: "AWS Textract documentation", url: "https://docs.aws.amazon.com/textract/" },
+    resource2: { label: "Tesseract OCR documentation", url: "https://tesseract-ocr.github.io/" }
+  },
+  "Audio & speech-to-text": {
+    what: "Converting spoken audio into text and understanding audio content — foundational for voice agents, meeting transcription, and accessibility features.",
+    learn: [
+      "Whisper: OpenAI's open-weight speech recognition model, strong multilingual support",
+      "Real-time transcription: streaming STT vs batch processing",
+      "Diarization: identifying who spoke when in multi-speaker audio",
+      "Audio chunking: handling long-form audio within model context limits",
+      "Accent and noise robustness: testing across real-world audio conditions"
+    ],
+    production: "Whisper (or hosted equivalents like AssemblyAI, Deepgram) is the standard for transcription. For real-time voice agents, latency matters more than raw accuracy — use streaming STT with partial results rather than waiting for complete utterances.",
+    avoid: "Don't assume transcription accuracy is uniform across accents and languages — test against your actual user population.",
+    resource: { label: "OpenAI Whisper GitHub", url: "https://github.com/openai/whisper" },
+    resource2: { label: "Deepgram real-time STT docs", url: "https://developers.deepgram.com/docs/" }
+  },
+  "Voice agents": {
+    what: "Full conversational AI systems combining speech-to-text, LLM reasoning, and text-to-speech in a low-latency loop — enabling natural voice interaction with AI systems.",
+    learn: [
+      "Pipeline architecture: STT → LLM → TTS, or native speech-to-speech models",
+      "Latency budget: sub-second response time is critical for natural conversation",
+      "Interruption handling: detecting when a user interrupts the agent mid-response",
+      "Turn-taking: silence detection, voice activity detection (VAD)",
+      "ElevenLabs / Cartesia: leading TTS providers for natural-sounding voice"
+    ],
+    production: "Voice agent latency budget is brutal — under 800ms perceived response time for natural conversation. This typically requires streaming STT, a fast LLM (Haiku-tier), and streaming TTS all pipelined together. Native speech-to-speech models (when available) eliminate the STT→LLM→TTS chain entirely.",
+    avoid: "Don't use a slow/large model for voice agents — latency matters more than raw capability for conversational UX.",
+    resource: { label: "ElevenLabs documentation", url: "https://elevenlabs.io/docs" },
+    resource2: { label: "LiveKit voice agent framework", url: "https://docs.livekit.io/agents/" }
+  },
+  "Video generation": {
+    what: "Models that generate video clips from text or image prompts — an emerging capability (Sora, Veo, Runway) still maturing for production use cases.",
+    learn: [
+      "Text-to-video: generating clips from text descriptions",
+      "Image-to-video: animating a static image",
+      "Current limitations: duration limits, consistency issues, cost",
+      "Use cases: marketing content, rapid prototyping, synthetic training data",
+      "Leading providers: Sora (OpenAI), Veo (Google), Runway"
+    ],
+    production: "Video generation is not yet reliable enough for most enterprise production use cases beyond marketing/creative content. Treat it as an emerging capability to track, not build core product features on top of in 2026 — quality and consistency still lag significantly behind image generation.",
+    avoid: "Don't build critical product features dependent on video generation quality — the technology is still rapidly evolving.",
+    resource: { label: "Runway documentation", url: "https://help.runwayml.com/" },
+    resource2: { label: "Google Veo overview", url: "https://deepmind.google/technologies/veo/" }
+  },
+  "Open-weight models": {
+    what: "Publicly available model weights (Llama, Qwen, Mistral, DeepSeek) that can be self-hosted, fine-tuned, and run without API dependency — important for cost, customization, and data residency.",
+    learn: [
+      "Llama (Meta): widely supported, strong general performance, large ecosystem",
+      "Qwen (Alibaba): excellent multilingual and coding performance",
+      "Mistral: efficient, strong performance per parameter",
+      "DeepSeek: strong reasoning at competitive cost, notable efficiency innovations",
+      "When self-hosting makes sense: data residency, cost at scale, fine-tuning needs"
+    ],
+    production: "Self-host open-weight models when: (1) data cannot leave your infrastructure, (2) you have sustained high volume where self-hosting is cheaper than API costs, or (3) you need fine-tuning for domain-specific behavior. Below significant scale, frontier APIs are almost always more cost-effective when you factor in engineering time.",
+    avoid: "Don't default to self-hosting for cost reasons without modeling total cost of ownership — GPU infrastructure, ops overhead, and engineering time add up.",
+    resource: { label: "Hugging Face Open LLM Leaderboard", url: "https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard" },
+    resource2: { label: "Llama model documentation", url: "https://www.llama.com/docs/overview/" }
+  },
+  "Hugging Face ecosystem": {
+    what: "The central hub for open-source models, datasets, and ML tooling — the GitHub of machine learning, essential for discovering and deploying open-weight models.",
+    learn: [
+      "Model Hub: browsing, filtering, and comparing thousands of open models",
+      "Transformers library: the standard Python library for loading and running models",
+      "Datasets library: accessing and processing training/eval datasets",
+      "Spaces: hosted demos for trying models without local setup",
+      "Inference Endpoints: managed hosting for Hugging Face models"
+    ],
+    production: "Use Hugging Face Hub to discover and benchmark candidate open-weight models before committing to self-hosting infrastructure. Inference Endpoints offer a middle ground between fully self-hosted (vLLM/K8s) and API-only — managed hosting for open-weight models without your own GPU infrastructure.",
+    avoid: "Don't deploy models directly from Hugging Face Transformers library to production without going through vLLM or a proper serving layer — raw Transformers inference is not optimized for throughput.",
+    resource: { label: "Hugging Face Hub", url: "https://huggingface.co/models" },
+    resource2: { label: "Transformers documentation", url: "https://huggingface.co/docs/transformers/index" }
+  },
+  "arXiv reading habit": {
+    what: "A sustainable practice of staying current with AI research without drowning in volume — scanning abstracts broadly, deep-reading selectively.",
+    learn: [
+      "arXiv cs.CL / cs.AI categories: where LLM and agent research is published",
+      "Abstract scanning: read 10-15 abstracts weekly, deep-read 1-2",
+      "Paper triage: does this paper change how I'd build something? If not, skip.",
+      "Mapping research to production: translating paper concepts into implementation",
+      "Following researchers vs following topics: curated Twitter/X lists, newsletters"
+    ],
+    production: "Build a weekly habit: 30 minutes scanning arXiv-sanity or Papers with Code for your focus areas (agents, RAG, evals). When a paper directly applies to something you're building, do a deep read and write a 1-page implementation sketch — this is how research becomes production architecture.",
+    avoid: "Don't try to read every paper in full — most research doesn't translate to production value. Triage ruthlessly.",
+    resource: { label: "arXiv-sanity — curated paper discovery", url: "https://arxiv-sanity-lite.com/" },
+    resource2: { label: "Papers with Code — research with implementations", url: "https://paperswithcode.com/" }
+  },
+  "Benchmark literacy": {
+    what: "The skill of reading model benchmark results critically — understanding what they measure, their limitations, and how to translate them into real decisions.",
+    learn: [
+      "What each benchmark actually measures vs what it's perceived to measure",
+      "Contamination risk: test data leaking into training sets",
+      "Benchmark saturation: when a benchmark stops differentiating models",
+      "Evaluation harness differences: same benchmark, different methodology, different scores",
+      "Building your own benchmark from production data — the only truly trustworthy signal"
+    ],
+    production: "Use public benchmarks only for initial model shortlisting. The final decision must come from your own eval suite run against your production task distribution. A model that's #1 on a public leaderboard may rank differently on your specific use case.",
+    avoid: "Don't make production model decisions based solely on leaderboard rankings — always validate on your own data.",
+    resource: { label: "Artificial Analysis — model comparison", url: "https://artificialanalysis.ai/" },
+    resource2: { label: "HELM — methodology transparency", url: "https://crfm.stanford.edu/helm/" }
+  },
+  "Framework trends": {
+    what: "Tracking which agent/AI frameworks are gaining real production adoption versus which are hype — a skill that prevents wasted effort on frameworks that won't last.",
+    learn: [
+      "LangGraph: stateful agent orchestration, strong production traction",
+      "DSPy: programmatic prompt optimization, research-to-production bridge",
+      "smolagents: minimal, lightweight Hugging Face agent framework",
+      "Signal sources: GitHub stars trajectory, production case studies, conference talks",
+      "Framework churn risk: how to architect so you're not locked into one framework"
+    ],
+    production: "Build an abstraction layer between your business logic and whatever orchestration framework you choose — frameworks in this space change rapidly. Evaluate frameworks on: production case studies (not just demos), debugging/observability support, and community velocity, not just feature lists.",
+    avoid: "Don't rewrite your agent architecture every time a new framework trends on GitHub — evaluate genuine capability gaps, not hype cycles.",
+    resource: { label: "LangGraph documentation", url: "https://langchain-ai.github.io/langgraph/" },
+    resource2: { label: "DSPy documentation", url: "https://dspy.ai/" }
+  },
+  "LinkedIn presence": {
+    what: "Building a professional reputation through consistent, substantive technical content — the platform where senior engineering decision-makers and hiring managers actually pay attention.",
+    learn: [
+      "Content format: short technical takes, architecture decision threads, lessons learned",
+      "Posting cadence: 2-3x per week sustained beats daily bursts that fade",
+      "Engagement strategy: respond to comments, engage with others' technical content",
+      "Profile optimization: value-first headline, not just job title",
+      "Cross-posting: adapt long-form blog content into LinkedIn-native short posts"
+    ],
+    production: "Treat LinkedIn posts as distribution for the deep work you're already doing — don't create separate 'LinkedIn content.' Take your production architecture decisions, your eval framework insights, your cost optimization wins, and write them as honest, specific posts. Specificity beats generic AI hot takes.",
+    avoid: "Don't post generic 'AI is changing everything' content — it's saturated and ignored. Specific, technical, opinionated posts perform better.",
+    resource: { label: "LinkedIn Creator documentation", url: "https://www.linkedin.com/help/linkedin/answer/a566491" },
+    resource2: { label: "Building in public guide — Sahil Lavingia", url: "https://www.indiehackers.com/post/the-ultimate-guide-to-building-in-public-9d4e310f3f" }
+  },
+  "YouTube / video": {
+    what: "Long-form video content — architecture walkthroughs, live coding, deep dives — that builds deeper trust and demonstrates expertise more vividly than text alone.",
+    learn: [
+      "Screen recording setup: OBS Studio, clean terminal/IDE themes",
+      "Content structure: problem statement → live build → results → lessons",
+      "Editing basics: cutting dead air, adding captions, thumbnail design",
+      "Live coding vs polished tutorial: tradeoffs in authenticity vs production value",
+      "Distribution: YouTube SEO, cross-posting clips to LinkedIn/X"
+    ],
+    production: "Start with screen-recorded architecture walkthroughs of systems you've already built — lower production overhead than scripted tutorials, and the authenticity of explaining real decisions resonates more with a technical audience than polished tutorials.",
+    avoid: "Don't wait for perfect production value before starting — a clear explanation with basic editing outperforms a polished video with weak content.",
+    resource: { label: "OBS Studio — free screen recording", url: "https://obsproject.com/" },
+    resource2: { label: "YouTube Creator Academy", url: "https://creatoracademy.youtube.com/" }
+  },
+  "Open source contribution": {
+    what: "Contributing code, documentation, or bug fixes to existing open-source AI projects — a high-credibility way to demonstrate skill and build genuine community standing.",
+    learn: [
+      "Finding good first issues: labeled 'good first issue' or 'help wanted'",
+      "PR etiquette: small, focused changes with clear descriptions and tests",
+      "Maintainer relationship: respond to review feedback promptly and graciously",
+      "Project selection: contribute to tools you actually use (Spring AI, LangChain4j)",
+      "Documentation contributions: often the easiest high-value entry point"
+    ],
+    production: "Contributing to frameworks you use in production (Spring AI, LiteLLM, MCP SDKs) compounds value two ways: you understand the internals better, and your name becomes associated with tools your target audience already trusts. Start with documentation fixes or small bug fixes before attempting larger features.",
+    avoid: "Don't attempt a large feature PR as your first contribution to an unfamiliar codebase — start small and build trust with maintainers.",
+    resource: { label: "First Contributions — beginner guide", url: "https://github.com/firstcontributions/first-contributions" },
+    resource2: { label: "Spring AI GitHub — open issues", url: "https://github.com/spring-projects/spring-ai/issues" }
+  },
+  "Community building": {
+    what: "Creating spaces — Discord servers, newsletters, meetups — where people gather around your expertise, compounding your reach beyond one-way content publishing.",
+    learn: [
+      "Newsletter platforms: Substack, ConvertKit — owning your audience relationship",
+      "Discord/Slack communities: structuring channels for sustained engagement",
+      "Conference talks: CFP process, structuring a 20-30 minute technical talk",
+      "Meetup organizing: local AI engineering meetups build deep relationships",
+      "Consistency over scale: a small, engaged community beats a large, passive one"
+    ],
+    production: "A newsletter is the highest-leverage community asset — you own the relationship (unlike platform-dependent followers), and it compounds. Start by converting your best LinkedIn/Substack content into a weekly digest. Conference talks are slower to build but create disproportionate credibility once established.",
+    avoid: "Don't try to build a Discord community before you have consistent content output — community needs something to gather around.",
+    resource: { label: "Substack — newsletter platform", url: "https://substack.com/" },
+    resource2: { label: "CFP guide for technical conferences", url: "https://github.com/SF-Bay-ACM/cfp-handbook" }
+  },
+  "Execution outcome": {
+    what: "Verifying that an agent's actions actually achieved the intended end state in the real system — not just that a tool returned without error, but that the world changed correctly.",
+    learn: [
+      "State verification: querying the actual system state after agent action",
+      "Idempotent checks: re-verifiable assertions about end state",
+      "Side-effect tracking: did the agent cause unintended changes beyond the goal?",
+      "Rollback verification: if an agent action needs reverting, did the rollback succeed?",
+      "Outcome vs output: the tool returning 200 OK doesn't mean the task succeeded"
+    ],
+    production: "Never trust a tool's success response alone — independently verify the end state. For a PR-raising agent, check that the PR actually exists with the expected diff, not just that the API call returned 201. This is the single most common gap in agent reliability.",
+    avoid: "Don't conflate 'the tool call succeeded' with 'the task succeeded' — these are different claims requiring different verification.",
+    resource: { label: "Anthropic agent evaluation guide", url: "https://docs.anthropic.com/en/docs/test-and-evaluate/evaluate-your-task" },
+    resource2: { label: "RAGAS evaluation framework", url: "https://docs.ragas.io/" }
+  },
+  "Sequence efficiency": {
+    what: "Measuring whether an agent achieved its goal through a reasonably direct path — avoiding redundant tool calls, unnecessary loops, or inefficient exploration that wastes time and cost.",
+    learn: [
+      "Redundant call detection: identical tool calls within the same trace",
+      "Optimal path comparison: comparing actual steps to a reference minimal path",
+      "Loop detection: agent stuck repeating similar actions without progress",
+      "Cost-per-task analysis: total tokens/calls per successful task completion",
+      "Efficiency vs robustness tradeoff: sometimes redundancy is intentional verification"
+    ],
+    production: "Track sequence efficiency as a secondary metric, not a pass/fail gate — an agent that takes one extra verification step isn't necessarily worse than one that's maximally efficient but more error-prone. Use it to identify cost optimization opportunities, not to penalize careful agents.",
+    avoid: "Don't optimize purely for fewest steps — sometimes additional verification steps improve reliability and are worth the cost.",
+    resource: { label: "Anthropic agentic systems guide", url: "https://docs.anthropic.com/en/docs/build-with-claude/build-with-claude/agentic-systems" },
+    resource2: { label: "SWE-bench trajectory analysis", url: "https://www.swebench.com/" }
+  }
+};
+
 const phases = [
   {
     n:"01", title:"LLM fundamentals", duration:"3–4 weeks",
@@ -607,14 +2111,18 @@ function renderPhases() {
         </div>
       </div>
       <div class="phase-body" ${isOpen ? '' : 'hidden'}>
-        <div class="skills-grid">
-          ${p.skills.map(s => `
-            <div class="skill-card">
-              <div class="skill-name">${s.name}</div>
+        <div class="skills-grid" id="grid-${i}">
+          ${p.skills.map((s, si) => `
+            <div class="skill-card" data-phase="${i}" data-skill="${si}" onclick="toggleSkill(${i}, ${si}, this)">
+              <div class="skill-card-head">
+                <div class="skill-name">${s.name}</div>
+                <svg class="skill-expand-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+              </div>
               <div class="skill-desc">${s.desc}</div>
               <span class="skill-tag ${tagClass[s.tag]}">${tagLabel[s.tag]}</span>
             </div>
           `).join('')}
+          <div class="skill-detail" id="detail-${i}"></div>
         </div>
         <div class="phase-insight">${p.insight}</div>
       </div>
@@ -622,6 +2130,89 @@ function renderPhases() {
     container.appendChild(div);
   });
   updateProgress();
+}
+
+function toggleSkill(phaseIdx, skillIdx, cardEl) {
+  const grid = document.getElementById(`grid-${phaseIdx}`);
+  const detail = document.getElementById(`detail-${phaseIdx}`);
+  const skill = phases[phaseIdx].skills[skillIdx];
+  const isSameCardOpen = cardEl.classList.contains('active');
+
+  // close any other active card in this grid
+  grid.querySelectorAll('.skill-card.active').forEach(c => c.classList.remove('active'));
+
+  if (isSameCardOpen) {
+    detail.classList.remove('open');
+    detail.innerHTML = '';
+    return;
+  }
+
+  cardEl.classList.add('active');
+  const data = SKILLS_DATA[skill.name];
+
+  if (!data) {
+    detail.innerHTML = `
+      <div class="skill-detail-header">
+        <div class="skill-detail-title">${skill.name}</div>
+        <button class="skill-detail-close" onclick="closeDetail(${phaseIdx})">✕</button>
+      </div>
+      <div class="skill-section-text">${skill.desc}</div>
+    `;
+    detail.classList.add('open');
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  detail.innerHTML = `
+    <div class="skill-detail-header">
+      <div class="skill-detail-title">${skill.name}</div>
+      <button class="skill-detail-close" onclick="closeDetail(${phaseIdx})" aria-label="Close">✕</button>
+    </div>
+    <div class="skill-section">
+      <span class="skill-section-label">What it is</span>
+      <div class="skill-section-text">${data.what}</div>
+    </div>
+    <div class="skill-section">
+      <span class="skill-section-label">What to learn</span>
+      <ul class="skill-learn-list">
+        ${data.learn.map(item => `<li>${item}</li>`).join('')}
+      </ul>
+    </div>
+    <div class="skill-section">
+      <span class="skill-section-label">In production</span>
+      <div class="skill-section-text">${data.production}</div>
+    </div>
+    <div class="skill-section">
+      <span class="skill-section-label">Watch out for</span>
+      <div class="skill-warn-box">${data.avoid}</div>
+    </div>
+    <div class="skill-section">
+      <span class="skill-section-label">Best resources</span>
+      <div class="skill-resources">
+        <a class="skill-resource-link" href="${data.resource.url}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3M9 2h5v5M14 2L7 9"/></svg>
+          ${data.resource.label}
+          <span class="skill-resource-arrow">↗</span>
+        </a>
+        ${data.resource2 ? `
+        <a class="skill-resource-link" href="${data.resource2.url}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3M9 2h5v5M14 2L7 9"/></svg>
+          ${data.resource2.label}
+          <span class="skill-resource-arrow">↗</span>
+        </a>` : ''}
+      </div>
+    </div>
+  `;
+  detail.classList.add('open');
+  setTimeout(() => detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
+
+function closeDetail(phaseIdx) {
+  const grid = document.getElementById(`grid-${phaseIdx}`);
+  const detail = document.getElementById(`detail-${phaseIdx}`);
+  grid.querySelectorAll('.skill-card.active').forEach(c => c.classList.remove('active'));
+  detail.classList.remove('open');
+  detail.innerHTML = '';
 }
 
 function toggle(i) {
